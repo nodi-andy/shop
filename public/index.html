@@ -12,6 +12,10 @@
     .modal-bg.show { display: flex }
     [data-tab-pane] { display: none }
     [data-tab-pane].show { display: block }
+    [data-cview] { display: none }
+    [data-cview].show { display: block }
+    .hide-scrollbar { scrollbar-width: none }
+    .hide-scrollbar::-webkit-scrollbar { display: none }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen antialiased">
@@ -161,14 +165,86 @@
   </div>
 </div>
 
-<!-- ═════════════════════════ CUSTOMER VIEW (M2) ═════════════════════════════ -->
-<div data-view="customer" class="min-h-screen items-center justify-center">
-  <div class="text-center p-12">
-    <div class="text-6xl mb-4">🛒</div>
-    <h2 class="text-2xl font-bold text-slate-700 mb-2">Customer View</h2>
-    <p class="text-slate-400">Browse shops and place orders — coming in Milestone 2</p>
-    <button onclick="logout()" class="mt-6 text-sm text-slate-400 hover:text-red-500 underline">Log out</button>
+<!-- ═════════════════════════ CUSTOMER VIEW ══════════════════════════════════ -->
+<div data-view="customer" class="min-h-screen flex flex-col bg-slate-50">
+
+  <!-- Customer nav -->
+  <nav class="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-1">
+        <button id="cust-back" onclick="custBack()"
+          class="hidden text-sm text-slate-500 hover:text-indigo-600 font-medium px-2 py-1 rounded-lg hover:bg-slate-100 transition">
+          ← Back
+        </button>
+        <span class="font-bold text-indigo-600 text-lg">🛒 ShopFlow</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="cust-username" class="text-sm text-slate-500 hidden sm:block"></span>
+        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition">
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Shops ── -->
+  <div data-cview="shops" class="show max-w-2xl mx-auto w-full px-4 py-6">
+    <h2 class="text-lg font-bold text-slate-800 mb-4">Find a Shop</h2>
+    <div id="shops-list"></div>
   </div>
+
+  <!-- ── Menu ── -->
+  <div data-cview="menu" class="max-w-2xl mx-auto w-full px-4 pt-4 pb-28">
+    <div id="shop-header" class="mb-4"></div>
+    <div id="menu-tabs" class="flex gap-2 overflow-x-auto pb-2 mb-4 hide-scrollbar"></div>
+    <div id="menu-products"></div>
+    <!-- sticky cart bar -->
+    <div id="cart-bar" class="hidden fixed bottom-0 left-0 right-0 bg-indigo-600 text-white px-4 py-3.5 z-10 shadow-2xl">
+      <div class="max-w-2xl mx-auto flex items-center justify-between">
+        <div class="text-sm font-medium">
+          <span id="cart-bar-count">0 items</span>
+          <span class="text-indigo-300 mx-2">·</span>
+          <span class="font-bold" id="cart-bar-total">€0.00</span>
+        </div>
+        <button onclick="custGo('cart')"
+          class="bg-white text-indigo-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-indigo-50 transition">
+          View Order →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Cart / Checkout ── -->
+  <div data-cview="cart" class="max-w-2xl mx-auto w-full px-4 py-4">
+    <h2 class="text-lg font-bold text-slate-800 mb-4">Your Order</h2>
+    <div id="cart-items"></div>
+    <div class="flex justify-between items-center font-bold text-base border-t border-slate-200 pt-3 mb-5">
+      <span>Total</span>
+      <span id="cart-total-display">€0.00</span>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3 mb-5">
+      <div>
+        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Your Name *</label>
+        <input id="checkout-name" type="text"
+          class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Note (optional)</label>
+        <input id="checkout-note" type="text" placeholder="e.g. no sugar, extra hot…"
+          class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+    </div>
+    <button id="place-order-btn" onclick="placeOrder()"
+      class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-base transition">
+      Place Order
+    </button>
+  </div>
+
+  <!-- ── Order status ── -->
+  <div data-cview="order" class="max-w-2xl mx-auto w-full px-4 py-6">
+    <div id="order-status-card"></div>
+  </div>
+
 </div>
 
 <!-- ═══════════════════════ PRODUCT MODAL ════════════════════════════════════ -->
@@ -297,7 +373,8 @@ async function loginAs(userId) {
   currentUser = await api('POST', '/api/login', { userId });
   localStorage.setItem('sf_user', JSON.stringify(currentUser));
   showView(currentUser.role);
-  if (currentUser.role === 'owner') await initOwner();
+  if (currentUser.role === 'owner')    await initOwner();
+  if (currentUser.role === 'customer') await initCustomer();
 }
 
 function logout() {
@@ -526,6 +603,333 @@ async function deleteProduct(id, name) {
 $('product-modal').addEventListener('click', e => { if (e.target === $('product-modal')) closeProductModal(); });
 
 // ═════════════════════════════════════════════════════════════════════════════
+// Customer
+// ═════════════════════════════════════════════════════════════════════════════
+
+let cart        = {};   // productId → { product, qty }
+let custShopId  = null;
+let custShop    = null;
+let custProds   = [];   // all products for current shop
+let custOrder   = null;
+let custPoll    = null;
+let menuFilter  = 'All';
+
+const STATUS_LABEL = {
+  pending:   '⏳ Pending',
+  preparing: '🍳 Preparing',
+  ready:     '✅ Ready for pickup',
+  delivered: '📦 Delivered',
+  cancelled: '✕ Cancelled'
+};
+const STATUS_COLOR = {
+  pending:   'bg-yellow-100 text-yellow-800',
+  preparing: 'bg-blue-100 text-blue-800',
+  ready:     'bg-emerald-100 text-emerald-800',
+  delivered: 'bg-slate-100 text-slate-600',
+  cancelled: 'bg-red-100 text-red-700'
+};
+
+// ── Routing ───────────────────────────────────────────────────────────────────
+
+function custGo(screen) {
+  document.querySelectorAll('[data-cview]').forEach(el => el.classList.remove('show'));
+  document.querySelector(`[data-cview="${screen}"]`)?.classList.add('show');
+  $('cust-back').classList.toggle('hidden', screen === 'shops');
+  // cart bar only belongs to menu
+  if (screen !== 'menu') $('cart-bar').classList.add('hidden');
+  if (screen === 'cart')  renderCart();
+  if (screen === 'menu')  updateCartBar();
+}
+
+function custBack() {
+  const cur = document.querySelector('[data-cview].show')?.dataset.cview;
+  custGo({ menu: 'shops', cart: 'menu', order: 'shops' }[cur] || 'shops');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+async function initCustomer() {
+  $('cust-username').textContent = currentUser?.name || '';
+  const shops = await api('GET', '/api/shops');
+  renderShopsList(shops);
+  custGo('shops');
+}
+
+// ── Shop list ─────────────────────────────────────────────────────────────────
+
+function renderShopsList(shops) {
+  if (!shops.length) {
+    $('shops-list').innerHTML = '<p class="text-slate-400 text-center py-10">No shops found.</p>';
+    return;
+  }
+  const today = ['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
+  $('shops-list').innerHTML = shops.map(s => {
+    const hours = s.openingTimes?.[today] || '';
+    const open  = hours && hours !== 'closed';
+    return `
+      <div onclick="openShop('${s.id}')"
+        class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md hover:border-indigo-200 transition cursor-pointer mb-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex-1 min-w-0">
+            <h3 class="font-bold text-slate-900 text-base">${esc(s.name)}</h3>
+            <p class="text-slate-500 text-sm mt-1 truncate">${esc(s.description)}</p>
+            <div class="flex flex-wrap items-center gap-3 mt-3">
+              ${s.address ? `<span class="text-xs text-slate-400">📍 ${esc(s.address)}</span>` : ''}
+              <span class="text-xs font-semibold ${open ? 'text-emerald-600' : 'text-slate-400'}">
+                ${open ? '● Open · ' + esc(hours) : '○ Closed today'}
+              </span>
+            </div>
+          </div>
+          <span class="text-slate-300 text-xl mt-1 shrink-0">›</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── Menu ──────────────────────────────────────────────────────────────────────
+
+async function openShop(shopId) {
+  custShopId  = shopId;
+  cart        = {};
+  menuFilter  = 'All';
+  [custShop, custProds] = await Promise.all([
+    api('GET', `/api/shops/${shopId}`),
+    api('GET', `/api/shops/${shopId}/products`)
+  ]);
+  $('shop-header').innerHTML = `
+    <div>
+      <h2 class="text-xl font-bold text-slate-900">${esc(custShop.name)}</h2>
+      <p class="text-sm text-slate-400 mt-0.5">${esc(custShop.description)}</p>
+    </div>`;
+  renderMenu();
+  custGo('menu');
+}
+
+function renderMenu() {
+  const avail = custProds.filter(p => p.available);
+  const cats  = ['All', ...new Set(avail.map(p => p.category))];
+
+  $('menu-tabs').innerHTML = cats.map(c => `
+    <button onclick="setMenuFilter('${esc(c)}')"
+      class="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition shrink-0 ${
+        menuFilter === c
+          ? 'bg-indigo-600 text-white'
+          : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-400'
+      }">${esc(c)}</button>`).join('');
+
+  const filtered = menuFilter === 'All' ? avail : avail.filter(p => p.category === menuFilter);
+  const groups   = {};
+  filtered.forEach(p => { (groups[p.category] ??= []).push(p); });
+
+  $('menu-products').innerHTML = Object.entries(groups).map(([cat, items]) => `
+    <div class="mb-5">
+      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-1">${esc(cat)}</h4>
+      <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        ${items.map((p, i) => {
+          const qty = cart[p.id]?.qty || 0;
+          return `
+            <div class="flex items-center gap-3 px-4 py-3 ${i < items.length - 1 ? 'border-b border-slate-100' : ''}">
+              <div class="flex-1 min-w-0">
+                <div class="font-medium text-slate-900">${esc(p.name)}</div>
+                ${p.description ? `<div class="text-sm text-slate-400 mt-0.5">${esc(p.description)}</div>` : ''}
+              </div>
+              <div class="font-semibold text-slate-700 whitespace-nowrap">€${Number(p.price).toFixed(2)}</div>
+              <div class="flex items-center gap-2">
+                ${qty > 0 ? `
+                  <button onclick="menuDec('${p.id}')"
+                    class="w-7 h-7 rounded-full bg-slate-100 hover:bg-red-100 hover:text-red-600 flex items-center justify-center font-bold text-xl leading-none transition">−</button>
+                  <span class="w-5 text-center text-sm font-bold text-indigo-700">${qty}</span>
+                ` : ''}
+                <button onclick="menuInc('${p.id}')"
+                  class="w-7 h-7 rounded-full ${qty > 0 ? 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200' : 'bg-indigo-600 text-white hover:bg-indigo-700'} flex items-center justify-center font-bold text-xl leading-none transition">+</button>
+              </div>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+
+  updateCartBar();
+}
+
+function setMenuFilter(cat) { menuFilter = cat; renderMenu(); }
+
+// ── Cart helpers ──────────────────────────────────────────────────────────────
+
+function menuInc(id) {
+  const p = custProds.find(x => x.id === id);
+  if (!p) return;
+  cart[id] = { product: p, qty: (cart[id]?.qty || 0) + 1 };
+  renderMenu();
+}
+
+function menuDec(id) {
+  if (!cart[id]) return;
+  cart[id].qty--;
+  if (cart[id].qty <= 0) delete cart[id];
+  renderMenu();
+}
+
+function cartCount() { return Object.values(cart).reduce((s, {qty}) => s + qty, 0); }
+function cartTotal() { return Object.values(cart).reduce((s, {product, qty}) => s + product.price * qty, 0); }
+
+function updateCartBar() {
+  const n = cartCount();
+  $('cart-bar').classList.toggle('hidden', n === 0);
+  if (n > 0) {
+    $('cart-bar-count').textContent = `${n} item${n !== 1 ? 's' : ''}`;
+    $('cart-bar-total').textContent = `€${cartTotal().toFixed(2)}`;
+  }
+}
+
+// ── Cart view ─────────────────────────────────────────────────────────────────
+
+function renderCart() {
+  const items = Object.values(cart);
+  $('cart-total-display').textContent = `€${cartTotal().toFixed(2)}`;
+  $('checkout-name').value = currentUser?.name || '';
+
+  if (!items.length) {
+    $('cart-items').innerHTML = `
+      <div class="text-center text-slate-400 py-10">
+        Your cart is empty.
+        <button onclick="custGo('menu')" class="text-indigo-600 hover:underline ml-1">Browse menu</button>
+      </div>`;
+    $('place-order-btn').disabled = true;
+    $('place-order-btn').className = 'w-full bg-slate-200 text-slate-400 py-3 rounded-xl font-bold text-base cursor-not-allowed';
+    return;
+  }
+
+  $('place-order-btn').disabled = false;
+  $('place-order-btn').className = 'w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-base transition';
+
+  $('cart-items').innerHTML = `
+    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm mb-4">
+      ${items.map((item, i) => `
+        <div class="flex items-center gap-3 px-4 py-3 ${i < items.length - 1 ? 'border-b border-slate-100' : ''}">
+          <div class="flex-1 min-w-0">
+            <div class="font-medium text-slate-900">${esc(item.product.name)}</div>
+            <div class="text-xs text-slate-400">€${item.product.price.toFixed(2)} each</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="cartDec('${item.product.id}')"
+              class="w-7 h-7 rounded-full bg-slate-100 hover:bg-red-100 hover:text-red-600 flex items-center justify-center font-bold text-xl leading-none transition">−</button>
+            <span class="w-6 text-center font-bold text-indigo-700">${item.qty}</span>
+            <button onclick="cartInc('${item.product.id}')"
+              class="w-7 h-7 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-600 flex items-center justify-center font-bold text-xl leading-none transition">+</button>
+          </div>
+          <div class="font-semibold text-slate-800 w-14 text-right">€${(item.product.price * item.qty).toFixed(2)}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function cartInc(id) {
+  const p = custProds.find(x => x.id === id);
+  if (!p) return;
+  cart[id] = { product: p, qty: (cart[id]?.qty || 0) + 1 };
+  renderCart();
+}
+
+function cartDec(id) {
+  if (!cart[id]) return;
+  cart[id].qty--;
+  if (cart[id].qty <= 0) delete cart[id];
+  renderCart();
+}
+
+// ── Place order ───────────────────────────────────────────────────────────────
+
+async function placeOrder() {
+  const name = $('checkout-name').value.trim();
+  if (!name) { $('checkout-name').focus(); return toast('Please enter your name', 'err'); }
+  if (!cartCount()) return;
+
+  const btn = $('place-order-btn');
+  btn.disabled = true;
+  btn.textContent = 'Placing order…';
+
+  try {
+    custOrder = await api('POST', `/api/shops/${custShopId}/orders`, {
+      customerId:   currentUser?.id   || null,
+      customerName: name,
+      items: Object.values(cart).map(({product, qty}) => ({
+        productId: product.id, name: product.name, price: product.price, qty
+      })),
+      note: $('checkout-note').value.trim()
+    });
+    cart = {};
+    custGo('order');
+    renderOrderCard(custOrder);
+    startPoll();
+  } catch (e) {
+    toast(e.message, 'err');
+    btn.disabled = false;
+    btn.textContent = 'Place Order';
+  }
+}
+
+// ── Order status ──────────────────────────────────────────────────────────────
+
+function renderOrderCard(order) {
+  const total    = order.items.reduce((s, i) => s + i.price * i.qty, 0);
+  const terminal = ['delivered', 'cancelled'].includes(order.status);
+  $('order-status-card').innerHTML = `
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="bg-indigo-600 text-white p-5">
+        <div class="text-sm text-indigo-200 mb-2">Order placed ✓</div>
+        <div class="flex items-center justify-between gap-3">
+          <span class="font-mono text-xs text-indigo-300">#${order.id}</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLOR[order.status] || 'bg-slate-100'}">
+            ${STATUS_LABEL[order.status] || order.status}
+          </span>
+        </div>
+      </div>
+      <div class="divide-y divide-slate-100">
+        ${order.items.map(it => `
+          <div class="flex items-center justify-between px-4 py-3 text-sm">
+            <span class="text-slate-700">${esc(it.name)}</span>
+            <div class="flex items-center gap-3">
+              <span class="text-slate-400">×${it.qty}</span>
+              <span class="font-medium w-16 text-right">€${(it.price * it.qty).toFixed(2)}</span>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div class="flex justify-between px-4 py-3 bg-slate-50 font-bold text-sm border-t border-slate-200">
+        <span>Total</span><span>€${total.toFixed(2)}</span>
+      </div>
+      ${order.note ? `<div class="px-4 py-3 text-sm text-slate-500 border-t border-slate-100">📝 ${esc(order.note)}</div>` : ''}
+      <div class="px-4 py-3 border-t border-slate-100">
+        ${terminal
+          ? `<button onclick="newOrder()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-indigo-700 transition">New Order</button>`
+          : `<p class="text-xs text-slate-400 text-center">Checking for updates every 3 s…</p>`}
+      </div>
+    </div>`;
+}
+
+async function pollStatus() {
+  if (!custOrder) return;
+  try {
+    const order = await api('GET', `/api/shops/${custShopId}/orders/${custOrder.id}`);
+    custOrder = order;
+    renderOrderCard(order);
+    if (!['delivered', 'cancelled'].includes(order.status)) {
+      custPoll = setTimeout(pollStatus, 3000);
+    }
+  } catch { custPoll = setTimeout(pollStatus, 5000); }
+}
+
+function startPoll() {
+  clearTimeout(custPoll);
+  custPoll = setTimeout(pollStatus, 3000);
+}
+
+function newOrder() {
+  clearTimeout(custPoll);
+  custOrder = null;
+  cart      = {};
+  custGo('shops');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
 // Boot
 // ═════════════════════════════════════════════════════════════════════════════
 (async () => {
@@ -534,7 +938,8 @@ $('product-modal').addEventListener('click', e => { if (e.target === $('product-
     try {
       currentUser = JSON.parse(saved);
       showView(currentUser.role);
-      if (currentUser.role === 'owner') await initOwner();
+      if (currentUser.role === 'owner')    await initOwner();
+      if (currentUser.role === 'customer') await initCustomer();
       return;
     } catch { localStorage.removeItem('sf_user'); }
   }

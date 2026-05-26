@@ -116,6 +116,11 @@ app.get('/api/shops/:shopId/orders', requireAuth, requireShopRole('owner', 'kitc
   }
 });
 
+app.get('/api/shops/:shopId/orders/:id', (req, res) => {
+  const order = db.get('orders').find(o => o.id === req.params.id && o.shopId === req.params.shopId);
+  order ? res.json(order) : res.status(404).json({ error: 'Not found' });
+});
+
 app.post('/api/shops/:shopId/orders', (req, res) => {
   const shop = db.get('shops').find(s => s.id === req.params.shopId);
   if (!shop) return res.status(404).json({ error: 'Shop not found' });
