@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Start Server",
+      "runtimeExecutable": "node",
+      "program": "${workspaceFolder}\\server.js",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "NODE_OPTIONS": ""
+      },
+      "envFile": "${workspaceFolder}\\.env",
+      "stopOnEntry": false,
+      "autoAttachChildProcesses": false,
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
+  ]
+}

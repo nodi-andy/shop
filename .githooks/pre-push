@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+set -e
+
+npm run --silent build:controller:offline
+
+if [ -n "$(git ls-files --others --exclude-standard -- public/downloads/controller-offline.zip)" ]; then
+  echo "Offline controller zip is untracked. Add and commit public/downloads/controller-offline.zip before pushing."
+  exit 1
+fi
+
+if ! git diff --quiet -- public/downloads/controller-offline.zip || ! git diff --cached --quiet -- public/downloads/controller-offline.zip; then
+  echo "Offline controller zip changed. Commit public/downloads/controller-offline.zip and push again."
+  exit 1
+fi
