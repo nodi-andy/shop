@@ -97,5 +97,14 @@
     "price": 2.2,
     "description": "Oat & honey granola bar",
     "available": true
+  },
+  {
+    "id": "pmpmwvw7dsth",
+    "shopId": "shop1",
+    "name": "SODA",
+    "category": "Cold Drinks",
+    "price": 2,
+    "description": "",
+    "available": true
   }
 ]
