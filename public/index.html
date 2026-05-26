@@ -145,23 +145,86 @@
   </div>
 </div>
 
-<!-- ═════════════════════════ KITCHEN VIEW (M3) ══════════════════════════════ -->
-<div data-view="kitchen" class="min-h-screen items-center justify-center">
-  <div class="text-center p-12">
-    <div class="text-6xl mb-4">👨‍🍳</div>
-    <h2 class="text-2xl font-bold text-slate-700 mb-2">Kitchen View</h2>
-    <p class="text-slate-400">Real-time order feed — coming in Milestone 3</p>
-    <button onclick="logout()" class="mt-6 text-sm text-slate-400 hover:text-red-500 underline">Log out</button>
+<!-- ═════════════════════════ KITCHEN VIEW ═══════════════════════════════════ -->
+<div data-view="kitchen" class="min-h-screen flex flex-col bg-slate-50">
+  <nav class="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">👨‍🍳</span>
+        <span class="font-bold text-slate-800">Kitchen</span>
+        <span class="text-slate-300 hidden sm:block">|</span>
+        <span id="kitchen-shop-name" class="text-slate-500 text-sm hidden sm:block"></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="kitchen-conn" class="flex items-center gap-1.5 text-xs text-slate-400">
+          <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="kitchen-dot"></span>Live
+        </span>
+        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="flex-1 max-w-5xl mx-auto w-full px-4 py-6">
+    <div id="kitchen-empty" class="text-center py-20 text-slate-400">
+      <div class="text-6xl mb-4">🍳</div>
+      <p class="text-lg font-medium text-slate-500">Kitchen is clear</p>
+      <p class="text-sm mt-1">Waiting for new orders…</p>
+    </div>
+    <div id="kitchen-board" class="hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+            <h3 class="font-bold text-slate-700">New Orders</h3>
+            <span id="k-pending-count" class="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+          </div>
+          <div id="k-pending" class="space-y-3"></div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+            <h3 class="font-bold text-slate-700">In Progress</h3>
+            <span id="k-preparing-count" class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+          </div>
+          <div id="k-preparing" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ══════════════════════════ WAITER VIEW (M3) ══════════════════════════════ -->
-<div data-view="waiter" class="min-h-screen items-center justify-center">
-  <div class="text-center p-12">
-    <div class="text-6xl mb-4">🛎️</div>
-    <h2 class="text-2xl font-bold text-slate-700 mb-2">Waiter View</h2>
-    <p class="text-slate-400">Delivery tracking — coming in Milestone 3</p>
-    <button onclick="logout()" class="mt-6 text-sm text-slate-400 hover:text-red-500 underline">Log out</button>
+<!-- ══════════════════════════ WAITER VIEW ════════════════════════════════════ -->
+<div data-view="waiter" class="min-h-screen flex flex-col bg-slate-50">
+  <nav class="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">🛎️</span>
+        <span class="font-bold text-slate-800">Waiter</span>
+        <span class="text-slate-300 hidden sm:block">|</span>
+        <span id="waiter-shop-name" class="text-slate-500 text-sm hidden sm:block"></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="flex items-center gap-1.5 text-xs text-slate-400">
+          <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="waiter-dot"></span>Live
+        </span>
+        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-2xl mx-auto w-full px-4 py-6">
+    <div class="mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+        <h3 class="font-bold text-slate-700">Ready for Pickup</h3>
+        <span id="w-ready-count" class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+      </div>
+      <div id="w-ready"></div>
+    </div>
+    <div>
+      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Recent Deliveries</h4>
+      <div id="w-delivered" class="space-y-2"></div>
+    </div>
   </div>
 </div>
 
@@ -375,6 +438,8 @@ async function loginAs(userId) {
   showView(currentUser.role);
   if (currentUser.role === 'owner')    await initOwner();
   if (currentUser.role === 'customer') await initCustomer();
+  if (currentUser.role === 'kitchen')  await initKitchen();
+  if (currentUser.role === 'waiter')   await initWaiter();
 }
 
 function logout() {
@@ -859,7 +924,7 @@ async function placeOrder() {
     cart = {};
     custGo('order');
     renderOrderCard(custOrder);
-    startPoll();
+    startOrderSSE();
   } catch (e) {
     toast(e.message, 'err');
     btn.disabled = false;
@@ -905,28 +970,227 @@ function renderOrderCard(order) {
     </div>`;
 }
 
-async function pollStatus() {
-  if (!custOrder) return;
-  try {
-    const order = await api('GET', `/api/shops/${custShopId}/orders/${custOrder.id}`);
+let custSSE = null;
+
+function startOrderSSE() {
+  if (custSSE) { custSSE.close(); custSSE = null; }
+  custSSE = new EventSource(`/api/shops/${custShopId}/events`);
+  custSSE.addEventListener('order:updated', e => {
+    const order = JSON.parse(e.data);
+    if (order.id !== custOrder?.id) return;
     custOrder = order;
     renderOrderCard(order);
-    if (!['delivered', 'cancelled'].includes(order.status)) {
-      custPoll = setTimeout(pollStatus, 3000);
+    if (['delivered', 'cancelled'].includes(order.status)) { custSSE.close(); custSSE = null; }
+  });
+  custSSE.onerror = () => {
+    custSSE?.close(); custSSE = null;
+    if (custOrder && !['delivered', 'cancelled'].includes(custOrder?.status)) {
+      custPoll = setTimeout(async () => {
+        try {
+          const o = await api('GET', `/api/shops/${custShopId}/orders/${custOrder.id}`);
+          custOrder = o; renderOrderCard(o);
+          if (!['delivered','cancelled'].includes(o.status)) startOrderSSE();
+        } catch { custPoll = setTimeout(startOrderSSE, 5000); }
+      }, 3000);
     }
-  } catch { custPoll = setTimeout(pollStatus, 5000); }
-}
-
-function startPoll() {
-  clearTimeout(custPoll);
-  custPoll = setTimeout(pollStatus, 3000);
+  };
 }
 
 function newOrder() {
   clearTimeout(custPoll);
+  if (custSSE) { custSSE.close(); custSSE = null; }
   custOrder = null;
   cart      = {};
   custGo('shops');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Shared real-time helpers
+// ═════════════════════════════════════════════════════════════════════════════
+
+function connectSSE(shopId, onEvent) {
+  let src;
+  function open() {
+    src = new EventSource(`/api/shops/${shopId}/events`);
+    src.addEventListener('connected',     () => {});
+    src.addEventListener('order:new',     e => onEvent('order:new',     JSON.parse(e.data)));
+    src.addEventListener('order:updated', e => onEvent('order:updated', JSON.parse(e.data)));
+    src.onerror = () => { src.close(); setTimeout(open, 3000); };
+  }
+  open();
+  return { close: () => src?.close() };
+}
+
+function timeAgo(iso) {
+  const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (s < 5)    return 'just now';
+  if (s < 60)   return s + 's ago';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  return Math.floor(s / 3600) + 'h ago';
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Kitchen
+// ═════════════════════════════════════════════════════════════════════════════
+
+let kitchenOrders = {};
+let kitchenSSE    = null;
+
+async function initKitchen() {
+  const shop = await api('GET', `/api/shops/${currentUser.shopId}`);
+  $('kitchen-shop-name').textContent = shop.name;
+
+  const orders = await api('GET', `/api/shops/${currentUser.shopId}/orders`);
+  kitchenOrders = Object.fromEntries(orders.map(o => [o.id, o]));
+  renderKitchen();
+
+  kitchenSSE = connectSSE(currentUser.shopId, (_evt, order) => {
+    kitchenOrders[order.id] = order;
+    renderKitchen();
+  });
+  $('kitchen-dot').className = 'w-2 h-2 rounded-full bg-emerald-400 inline-block';
+}
+
+function renderKitchen() {
+  const all       = Object.values(kitchenOrders);
+  const pending   = all.filter(o => o.status === 'pending')  .sort((a,b) => new Date(a.createdAt)-new Date(b.createdAt));
+  const preparing = all.filter(o => o.status === 'preparing').sort((a,b) => new Date(a.createdAt)-new Date(b.createdAt));
+  const hasWork   = pending.length + preparing.length > 0;
+
+  $('kitchen-empty').classList.toggle('hidden', hasWork);
+  $('kitchen-board').classList.toggle('hidden', !hasWork);
+  $('k-pending-count').textContent   = pending.length;
+  $('k-preparing-count').textContent = preparing.length;
+
+  $('k-pending').innerHTML = pending.length
+    ? pending.map(o => kOrderCard(o)).join('')
+    : '<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">No new orders</p>';
+
+  $('k-preparing').innerHTML = preparing.length
+    ? preparing.map(o => kOrderCard(o)).join('')
+    : '<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">Nothing in progress</p>';
+}
+
+function kOrderCard(o) {
+  const isPending = o.status === 'pending';
+  return `
+    <div class="bg-white rounded-2xl border ${isPending ? 'border-yellow-200' : 'border-blue-200'} shadow-sm p-4">
+      <div class="flex items-start justify-between gap-2 mb-3">
+        <div class="min-w-0">
+          <span class="font-mono text-xs text-slate-400">#${o.id.slice(-6)}</span>
+          <span class="ml-2 font-semibold text-slate-900">${esc(o.customerName)}</span>
+        </div>
+        <span class="text-xs text-slate-400 shrink-0">${timeAgo(o.createdAt)}</span>
+      </div>
+      <div class="space-y-1 mb-3">
+        ${o.items.map(i => `
+          <div class="flex gap-2 text-sm">
+            <span class="font-bold ${isPending ? 'text-yellow-600' : 'text-blue-600'} w-5 text-right shrink-0">${i.qty}×</span>
+            <span class="text-slate-800">${esc(i.name)}</span>
+          </div>`).join('')}
+      </div>
+      ${o.note ? `<div class="text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mb-3">📝 ${esc(o.note)}</div>` : ''}
+      ${isPending
+        ? `<button onclick="kitchenAction('${o.id}','preparing')"
+             class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-sm font-semibold transition">
+             Start Preparing →
+           </button>`
+        : `<button onclick="kitchenAction('${o.id}','ready')"
+             class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-sm font-semibold transition">
+             ✓ Mark Ready
+           </button>`}
+    </div>`;
+}
+
+async function kitchenAction(orderId, status) {
+  try {
+    const updated = await api('PATCH', `/api/shops/${currentUser.shopId}/orders/${orderId}/status`, { status });
+    kitchenOrders[orderId] = updated;
+    renderKitchen();
+  } catch (e) { toast(e.message, 'err'); }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Waiter
+// ═════════════════════════════════════════════════════════════════════════════
+
+let waiterOrders = {};
+let waiterSSE    = null;
+
+async function initWaiter() {
+  const shop = await api('GET', `/api/shops/${currentUser.shopId}`);
+  $('waiter-shop-name').textContent = shop.name;
+
+  const orders = await api('GET', `/api/shops/${currentUser.shopId}/orders`);
+  waiterOrders = Object.fromEntries(orders.map(o => [o.id, o]));
+  renderWaiter();
+
+  waiterSSE = connectSSE(currentUser.shopId, (_evt, order) => {
+    waiterOrders[order.id] = order;
+    renderWaiter();
+  });
+  $('waiter-dot').className = 'w-2 h-2 rounded-full bg-emerald-400 inline-block';
+}
+
+function renderWaiter() {
+  const all       = Object.values(waiterOrders);
+  const ready     = all.filter(o => o.status === 'ready')    .sort((a,b) => new Date(a.updatedAt)-new Date(b.updatedAt));
+  const delivered = all.filter(o => o.status === 'delivered').sort((a,b) => new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0, 8);
+
+  $('w-ready-count').textContent = ready.length;
+
+  $('w-ready').innerHTML = ready.length
+    ? ready.map(o => wReadyCard(o)).join('')
+    : `<div class="text-center text-slate-400 py-12 border-2 border-dashed border-slate-200 rounded-2xl">
+         <div class="text-4xl mb-2">⏳</div>
+         <p class="text-sm">Waiting for orders to be ready…</p>
+       </div>`;
+
+  $('w-delivered').innerHTML = delivered.length
+    ? delivered.map(o => wDeliveredRow(o)).join('')
+    : '<p class="text-sm text-slate-400 text-center py-2">No deliveries yet</p>';
+}
+
+function wReadyCard(o) {
+  const total = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+  return `
+    <div class="bg-white rounded-2xl border-2 border-emerald-200 shadow-sm p-4 mb-3">
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <div>
+          <span class="font-mono text-xs text-slate-400">#${o.id.slice(-6)}</span>
+          <span class="ml-2 font-semibold text-slate-900">${esc(o.customerName)}</span>
+        </div>
+        <span class="text-xs text-slate-400">${timeAgo(o.updatedAt)}</span>
+      </div>
+      <p class="text-sm text-slate-600 mb-1">${o.items.map(i => `${i.qty}× ${esc(i.name)}`).join(', ')}</p>
+      <p class="text-sm font-semibold text-slate-700 mb-3">€${total.toFixed(2)}</p>
+      ${o.note ? `<p class="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-1.5 mb-3">📝 ${esc(o.note)}</p>` : ''}
+      <button onclick="waiterDeliver('${o.id}')"
+        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-sm font-semibold transition">
+        ✓ Delivered
+      </button>
+    </div>`;
+}
+
+function wDeliveredRow(o) {
+  return `
+    <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="text-emerald-500 font-bold">✓</span>
+        <span class="font-medium text-slate-700">${esc(o.customerName)}</span>
+        <span class="text-slate-400 font-mono text-xs">#${o.id.slice(-6)}</span>
+      </div>
+      <span class="text-slate-400 text-xs">${timeAgo(o.updatedAt)}</span>
+    </div>`;
+}
+
+async function waiterDeliver(orderId) {
+  try {
+    const updated = await api('PATCH', `/api/shops/${currentUser.shopId}/orders/${orderId}/status`, { status: 'delivered' });
+    waiterOrders[orderId] = updated;
+    renderWaiter();
+    toast('Order delivered ✓');
+  } catch (e) { toast(e.message, 'err'); }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -940,6 +1204,8 @@ function newOrder() {
       showView(currentUser.role);
       if (currentUser.role === 'owner')    await initOwner();
       if (currentUser.role === 'customer') await initCustomer();
+      if (currentUser.role === 'kitchen')  await initKitchen();
+      if (currentUser.role === 'waiter')   await initWaiter();
       return;
     } catch { localStorage.removeItem('sf_user'); }
   }
