@@ -107,6 +107,11 @@ app.delete('/api/shops/:shopId/products/:id', requireAuth, requireShopRole('owne
 
 // ── Orders ────────────────────────────────────────────────────────────────────
 
+app.get('/api/orders', requireAuth, (req, res) => {
+  if (req.user.role !== 'customer') return res.status(403).json({ error: 'Forbidden' });
+  res.json(db.get('orders').filter(o => o.customerId === req.user.id));
+});
+
 app.get('/api/shops/:shopId/orders', requireAuth, requireShopRole('owner', 'kitchen', 'waiter', 'customer'), (req, res) => {
   const all = db.get('orders').filter(o => o.shopId === req.params.shopId);
   if (req.user.role === 'customer') {
