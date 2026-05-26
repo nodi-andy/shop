@@ -1,0 +1,20 @@
+[
+  {
+    "id": "shop1",
+    "name": "Andy's Café",
+    "description": "Fresh coffee, food & snacks in the heart of the city.",
+    "ownerId": "u1",
+    "categories": ["Coffee", "Cold Drinks", "Food", "Snacks"],
+    "address": "123 Main Street, Anytown",
+    "phone": "+1-555-0100",
+    "openingTimes": {
+      "mon": "08:00-18:00",
+      "tue": "08:00-18:00",
+      "wed": "08:00-18:00",
+      "thu": "08:00-18:00",
+      "fri": "08:00-20:00",
+      "sat": "09:00-16:00",
+      "sun": "closed"
+    }
+  }
+]

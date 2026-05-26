@@ -1,0 +1,101 @@
+[
+  {
+    "id": "p1",
+    "shopId": "shop1",
+    "name": "Espresso",
+    "category": "Coffee",
+    "price": 2.5,
+    "description": "Strong Italian espresso shot",
+    "available": true
+  },
+  {
+    "id": "p2",
+    "shopId": "shop1",
+    "name": "Cappuccino",
+    "category": "Coffee",
+    "price": 3.5,
+    "description": "Espresso with velvety steamed milk",
+    "available": true
+  },
+  {
+    "id": "p3",
+    "shopId": "shop1",
+    "name": "Latte",
+    "category": "Coffee",
+    "price": 4,
+    "description": "Smooth coffee with lots of milk",
+    "available": true
+  },
+  {
+    "id": "p4",
+    "shopId": "shop1",
+    "name": "Cold Brew",
+    "category": "Coffee",
+    "price": 4.5,
+    "description": "12-hour cold-steeped coffee",
+    "available": true
+  },
+  {
+    "id": "p5",
+    "shopId": "shop1",
+    "name": "Orange Juice",
+    "category": "Cold Drinks",
+    "price": 3,
+    "description": "Freshly squeezed",
+    "available": true
+  },
+  {
+    "id": "p6",
+    "shopId": "shop1",
+    "name": "Sparkling Water",
+    "category": "Cold Drinks",
+    "price": 1.5,
+    "description": "330 ml bottle",
+    "available": true
+  },
+  {
+    "id": "p7",
+    "shopId": "shop1",
+    "name": "Club Sandwich",
+    "category": "Food",
+    "price": 8.5,
+    "description": "Chicken, bacon, lettuce, tomato",
+    "available": true
+  },
+  {
+    "id": "p8",
+    "shopId": "shop1",
+    "name": "Croissant",
+    "category": "Food",
+    "price": 3.5,
+    "description": "Butter croissant, plain or with jam",
+    "available": true
+  },
+  {
+    "id": "p9",
+    "shopId": "shop1",
+    "name": "Avocado Toast",
+    "category": "Food",
+    "price": 7,
+    "description": "Sourdough, avocado, poached egg",
+    "available": false
+  },
+  {
+    "id": "p10",
+    "shopId": "shop1",
+    "name": "Chocolate Muffin",
+    "category": "Snacks",
+    "price": 2.8,
+    "description": "Rich dark chocolate muffin",
+    "available": true
+  },
+  {
+    "id": "p11",
+    "shopId": "shop1",
+    "name": "Granola Bar",
+    "category": "Snacks",
+    "price": 2.2,
+    "description": "Oat & honey granola bar",
+    "available": true
+  }
+]

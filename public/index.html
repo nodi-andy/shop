@@ -1,46 +1,546 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: system-ui, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: #f8fafc;
-            color: #1e293b;
-        }
-        .card {
-            text-align: center;
-            padding: 3rem 4rem;
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-        }
-        h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-        p { color: #64748b; }
-        .badge {
-            display: inline-block;
-            margin-top: 1.5rem;
-            padding: 0.25rem 0.75rem;
-            background: #dcfce7;
-            color: #166534;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopFlow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    [data-view] { display: none }
+    [data-view].show { display: flex; flex-direction: column }
+    .modal-bg { display: none }
+    .modal-bg.show { display: flex }
+    [data-tab-pane] { display: none }
+    [data-tab-pane].show { display: block }
+  </style>
 </head>
-<body>
-    <div class="card">
-        <h1>Hello from Cloud Run</h1>
-        <p>Boilerplate is live. Start building.</p>
-        <span class="badge">OK</span>
+<body class="bg-slate-50 text-slate-900 min-h-screen antialiased">
+
+<!-- ═══════════════════════════ LOGIN VIEW ═══════════════════════════════════ -->
+<div data-view="login" class="show min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-100 items-center justify-center p-6">
+  <div class="w-full max-w-2xl">
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-semibold mb-4">
+        🛒 ShopFlow
+      </div>
+      <h1 class="text-3xl font-bold text-slate-900">Welcome back</h1>
+      <p class="text-slate-500 mt-2">Select your role to continue</p>
     </div>
+    <div id="login-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
+    <p class="text-center text-xs text-slate-400 mt-8">Demo app — click any card to log in instantly</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════ OWNER VIEW ════════════════════════════════════ -->
+<div data-view="owner" class="min-h-screen">
+  <!-- Nav -->
+  <nav class="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="font-bold text-indigo-600 text-lg">🛒 ShopFlow</span>
+        <span class="text-slate-300 hidden sm:block">|</span>
+        <span id="owner-shop-name" class="font-medium text-slate-700 hidden sm:block"></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-slate-500 hidden sm:block">👤 <span id="owner-user-name"></span></span>
+        <button onclick="logout()" class="text-sm text-slate-500 hover:text-red-500 transition border border-slate-200 hover:border-red-300 px-3 py-1.5 rounded-lg">
+          Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Tab bar -->
+  <div class="bg-white border-b border-slate-200">
+    <div class="max-w-5xl mx-auto px-4 flex gap-1 pt-3">
+      <button data-tab-btn="settings" onclick="ownerTab('settings')"
+        class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition">
+        ⚙️ Shop Settings
+      </button>
+      <button data-tab-btn="products" onclick="ownerTab('products')"
+        class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition">
+        📦 Products
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings pane -->
+  <div data-tab-pane="settings" class="max-w-5xl mx-auto px-4 py-6">
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Basic info card -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <h3 class="font-semibold text-slate-800 mb-4">Shop Info</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Shop Name</label>
+            <input id="sf-name" type="text" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Description</label>
+            <textarea id="sf-desc" rows="2" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"></textarea>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Address</label>
+            <input id="sf-address" type="text" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Phone</label>
+            <input id="sf-phone" type="text" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Categories (comma-separated)</label>
+            <input id="sf-categories" type="text" placeholder="Coffee, Food, Drinks…" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          </div>
+        </div>
+      </div>
+
+      <!-- Opening times card -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+        <h3 class="font-semibold text-slate-800 mb-4">Opening Times</h3>
+        <div id="sf-opening-times" class="space-y-1"></div>
+      </div>
+    </div>
+
+    <div class="mt-5 flex items-center gap-3">
+      <button onclick="saveSettings()"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
+        Save Changes
+      </button>
+    </div>
+  </div>
+
+  <!-- Products pane -->
+  <div data-tab-pane="products" class="max-w-5xl mx-auto px-4 py-6">
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
+        <div id="stat-total" class="text-2xl font-bold text-indigo-600">0</div>
+        <div class="text-xs text-slate-500 mt-0.5">Total</div>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
+        <div id="stat-available" class="text-2xl font-bold text-emerald-600">0</div>
+        <div class="text-xs text-slate-500 mt-0.5">Available</div>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
+        <div id="stat-cats" class="text-2xl font-bold text-orange-500">0</div>
+        <div class="text-xs text-slate-500 mt-0.5">Categories</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <div id="category-filters" class="flex flex-wrap gap-2"></div>
+      <button onclick="openProductModal()"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">
+        + Add Product
+      </button>
+    </div>
+
+    <!-- Product list -->
+    <div id="product-list"></div>
+  </div>
+</div>
+
+<!-- ═════════════════════════ KITCHEN VIEW (M3) ══════════════════════════════ -->
+<div data-view="kitchen" class="min-h-screen items-center justify-center">
+  <div class="text-center p-12">
+    <div class="text-6xl mb-4">👨‍🍳</div>
+    <h2 class="text-2xl font-bold text-slate-700 mb-2">Kitchen View</h2>
+    <p class="text-slate-400">Real-time order feed — coming in Milestone 3</p>
+    <button onclick="logout()" class="mt-6 text-sm text-slate-400 hover:text-red-500 underline">Log out</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════ WAITER VIEW (M3) ══════════════════════════════ -->
+<div data-view="waiter" class="min-h-screen items-center justify-center">
+  <div class="text-center p-12">
+    <div class="text-6xl mb-4">🛎️</div>
+    <h2 class="text-2xl font-bold text-slate-700 mb-2">Waiter View</h2>
+    <p class="text-slate-400">Delivery tracking — coming in Milestone 3</p>
+    <button onclick="logout()" class="mt-6 text-sm text-slate-400 hover:text-red-500 underline">Log out</button>
+  </div>
+</div>
+
+<!-- ═════════════════════════ CUSTOMER VIEW (M2) ═════════════════════════════ -->
+<div data-view="customer" class="min-h-screen items-center justify-center">
+  <div class="text-center p-12">
+    <div class="text-6xl mb-4">🛒</div>
+    <h2 class="text-2xl font-bold text-slate-700 mb-2">Customer View</h2>
+    <p class="text-slate-400">Browse shops and place orders — coming in Milestone 2</p>
+    <button onclick="logout()" class="mt-6 text-sm text-slate-400 hover:text-red-500 underline">Log out</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ PRODUCT MODAL ════════════════════════════════════ -->
+<div id="product-modal" class="modal-bg fixed inset-0 bg-black/40 z-50 items-center justify-center p-4">
+  <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <h3 id="modal-title" class="font-semibold text-slate-900 text-lg">Add Product</h3>
+      <button onclick="closeProductModal()" class="text-slate-400 hover:text-slate-700 text-xl leading-none">&times;</button>
+    </div>
+    <form id="product-form" onsubmit="submitProductForm(event)" class="px-6 py-4 space-y-4">
+      <div>
+        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Name *</label>
+        <input id="pf-name" type="text" required
+          class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Category *</label>
+          <input id="pf-category" list="category-list" required
+            class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          <datalist id="category-list"></datalist>
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Price (€) *</label>
+          <input id="pf-price" type="number" min="0" step="0.10" required
+            class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Description</label>
+        <input id="pf-desc" type="text"
+          class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+      <div class="flex items-center gap-3">
+        <input id="pf-available" type="checkbox" checked class="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-400">
+        <label for="pf-available" class="text-sm text-slate-700">Available for ordering</label>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="button" onclick="closeProductModal()"
+          class="flex-1 border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2.5 rounded-lg text-sm font-medium transition">
+          Cancel
+        </button>
+        <button type="submit"
+          class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition">
+          Save Product
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-5 right-5 z-50 px-4 py-3 rounded-xl text-sm font-medium shadow-lg transition-all duration-300 opacity-0 pointer-events-none"></div>
+
+<script>
+// ═════════════════════════════════════════════════════════════════════════════
+// State
+// ═════════════════════════════════════════════════════════════════════════════
+let currentUser  = null;
+let currentShop  = null;
+let products     = [];
+let editingId    = null;
+let activeFilter = 'All';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Utils
+// ═════════════════════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function api(method, url, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (currentUser?.id) opts.headers['x-user-id'] = currentUser.id;
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  const r = await fetch(url, opts);
+  if (r.status === 204) return null;
+  const data = await r.json();
+  if (!r.ok) throw new Error(data.error || r.statusText);
+  return data;
+}
+
+function toast(msg, type = 'ok') {
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = `fixed bottom-5 right-5 z-50 px-4 py-3 rounded-xl text-sm font-medium shadow-lg transition-all duration-300
+    ${type === 'ok' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'}`;
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.opacity = '0'; }, 3000);
+}
+
+function showView(name) {
+  document.querySelectorAll('[data-view]').forEach(el => el.classList.remove('show'));
+  const el = document.querySelector(`[data-view="${name}"]`);
+  if (el) el.classList.add('show');
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Login
+// ═════════════════════════════════════════════════════════════════════════════
+const ROLE_META = {
+  owner:    { emoji: '👨‍💼', label: 'Shop Owner',  color: 'border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50' },
+  kitchen:  { emoji: '👨‍🍳', label: 'Kitchen',     color: 'border-orange-200 hover:border-orange-400 hover:bg-orange-50' },
+  waiter:   { emoji: '🛎️',  label: 'Waiter',      color: 'border-teal-200   hover:border-teal-400   hover:bg-teal-50'   },
+  customer: { emoji: '👤',  label: 'Customer',    color: 'border-sky-200    hover:border-sky-400    hover:bg-sky-50'    },
+};
+
+async function renderLoginCards() {
+  const users = await api('GET', '/api/users');
+  $('login-grid').innerHTML = users.map(u => {
+    const m = ROLE_META[u.role] || ROLE_META.customer;
+    return `
+      <button onclick="loginAs('${u.id}')"
+        class="p-5 bg-white rounded-2xl border-2 ${m.color} transition-all text-left group">
+        <div class="text-4xl mb-3">${m.emoji}</div>
+        <div class="font-bold text-slate-900 text-base">${esc(u.name)}</div>
+        <div class="text-sm text-slate-500 mt-0.5">${m.label}</div>
+      </button>`;
+  }).join('');
+}
+
+async function loginAs(userId) {
+  currentUser = await api('POST', '/api/login', { userId });
+  localStorage.setItem('sf_user', JSON.stringify(currentUser));
+  showView(currentUser.role);
+  if (currentUser.role === 'owner') await initOwner();
+}
+
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('sf_user');
+  location.reload();
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Owner
+// ═════════════════════════════════════════════════════════════════════════════
+async function initOwner() {
+  currentShop = await api('GET', `/api/shops/${currentUser.shopId}`);
+  $('owner-shop-name').textContent = currentShop.name;
+  $('owner-user-name').textContent = currentUser.name;
+  renderSettings();
+  ownerTab('products');
+  await loadProducts();
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function ownerTab(tab) {
+  document.querySelectorAll('[data-tab-btn]').forEach(btn => {
+    const active = btn.dataset.tabBtn === tab;
+    btn.className = `px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition ${
+      active ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'
+    }`;
+  });
+  document.querySelectorAll('[data-tab-pane]').forEach(pane => {
+    pane.classList.toggle('show', pane.dataset.tabPane === tab);
+  });
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+function renderSettings() {
+  $('sf-name').value       = currentShop.name;
+  $('sf-desc').value       = currentShop.description;
+  $('sf-address').value    = currentShop.address;
+  $('sf-phone').value      = currentShop.phone;
+  $('sf-categories').value = currentShop.categories.join(', ');
+
+  const DAYS = ['mon','tue','wed','thu','fri','sat','sun'];
+  const DAY_LABEL = { mon:'Mon',tue:'Tue',wed:'Wed',thu:'Thu',fri:'Fri',sat:'Sat',sun:'Sun' };
+  $('sf-opening-times').innerHTML = DAYS.map(d => {
+    const val = currentShop.openingTimes?.[d] || '';
+    const open = val !== 'closed' && val !== '';
+    return `
+      <div class="flex items-center gap-3 py-2 border-b border-slate-100 last:border-0">
+        <span class="w-8 text-xs font-semibold text-slate-600">${DAY_LABEL[d]}</span>
+        <input type="checkbox" id="ot-${d}" ${open ? 'checked' : ''} onchange="toggleDay('${d}')"
+          class="h-4 w-4 rounded accent-indigo-600">
+        <input id="ot-${d}-val" type="text" value="${open ? esc(val) : ''}" placeholder="08:00-18:00"
+          class="flex-1 text-sm border border-slate-200 rounded-md px-2 py-1 max-w-[150px] focus:outline-none focus:ring-1 focus:ring-indigo-400 ${!open ? 'opacity-30 pointer-events-none' : ''}">
+        <span id="ot-${d}-lbl" class="text-xs text-slate-400 ${open ? 'hidden' : ''}">Closed</span>
+      </div>`;
+  }).join('');
+}
+
+function toggleDay(d) {
+  const open = $(`ot-${d}`).checked;
+  const inp  = $(`ot-${d}-val`);
+  const lbl  = $(`ot-${d}-lbl`);
+  inp.classList.toggle('opacity-30', !open);
+  inp.classList.toggle('pointer-events-none', !open);
+  lbl.classList.toggle('hidden', open);
+}
+
+async function saveSettings() {
+  const DAYS = ['mon','tue','wed','thu','fri','sat','sun'];
+  const openingTimes = {};
+  DAYS.forEach(d => {
+    openingTimes[d] = $(`ot-${d}`).checked ? ($(`ot-${d}-val`).value.trim() || 'closed') : 'closed';
+  });
+  try {
+    currentShop = await api('PUT', `/api/shops/${currentShop.id}`, {
+      name:         $('sf-name').value.trim(),
+      description:  $('sf-desc').value.trim(),
+      address:      $('sf-address').value.trim(),
+      phone:        $('sf-phone').value.trim(),
+      categories:   $('sf-categories').value.split(',').map(c => c.trim()).filter(Boolean),
+      openingTimes
+    });
+    $('owner-shop-name').textContent = currentShop.name;
+    refreshCategoryList();
+    toast('Settings saved ✓');
+  } catch (e) { toast(e.message, 'err'); }
+}
+
+// ── Products ──────────────────────────────────────────────────────────────────
+async function loadProducts() {
+  products = await api('GET', `/api/shops/${currentShop.id}/products`);
+  renderProducts();
+}
+
+function renderProducts() {
+  // Stats
+  $('stat-total').textContent     = products.length;
+  $('stat-available').textContent = products.filter(p => p.available).length;
+  $('stat-cats').textContent      = [...new Set(products.map(p => p.category))].length;
+
+  // Filter chips
+  const cats = ['All', ...currentShop.categories];
+  $('category-filters').innerHTML = cats.map(c => `
+    <button onclick="setFilter('${esc(c)}')"
+      class="px-3 py-1.5 rounded-full text-sm font-medium transition ${
+        activeFilter === c
+          ? 'bg-indigo-600 text-white shadow-sm'
+          : 'bg-white border border-slate-300 text-slate-600 hover:border-indigo-400'
+      }">
+      ${esc(c)}
+    </button>`).join('');
+
+  // Filtered & grouped
+  const filtered = activeFilter === 'All' ? products : products.filter(p => p.category === activeFilter);
+
+  if (!filtered.length) {
+    $('product-list').innerHTML = `
+      <div class="text-center py-16 text-slate-400">
+        <div class="text-5xl mb-3">📦</div>
+        <p>${activeFilter === 'All' ? 'No products yet — add your first one!' : `No products in "${esc(activeFilter)}"`}</p>
+      </div>`;
+    return;
+  }
+
+  const groups = {};
+  filtered.forEach(p => { (groups[p.category] ??= []).push(p); });
+
+  $('product-list').innerHTML = Object.entries(groups).map(([cat, items]) => `
+    <div class="mb-5">
+      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-1">${esc(cat)}</h4>
+      <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        ${items.map((p, i) => `
+          <div class="flex items-center gap-3 px-4 py-3 ${i < items.length - 1 ? 'border-b border-slate-100' : ''}">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-medium text-slate-900">${esc(p.name)}</span>
+                ${!p.available ? `<span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">Unavailable</span>` : ''}
+              </div>
+              ${p.description ? `<div class="text-sm text-slate-400 truncate mt-0.5">${esc(p.description)}</div>` : ''}
+            </div>
+            <div class="font-semibold text-slate-800 whitespace-nowrap">€${Number(p.price).toFixed(2)}</div>
+            <div class="flex gap-1.5">
+              <button onclick="openProductModal('${p.id}')"
+                class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-100 hover:text-indigo-700 transition font-medium">
+                Edit
+              </button>
+              <button onclick="deleteProduct('${p.id}', '${esc(p.name)}')"
+                class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-red-100 hover:text-red-600 transition font-medium">
+                Delete
+              </button>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function setFilter(cat) {
+  activeFilter = cat;
+  renderProducts();
+}
+
+function refreshCategoryList() {
+  $('category-list').innerHTML = currentShop.categories.map(c => `<option value="${esc(c)}">`).join('');
+}
+
+// ── Product modal ─────────────────────────────────────────────────────────────
+function openProductModal(id = null) {
+  editingId = id;
+  const p = id ? products.find(x => x.id === id) : null;
+  $('modal-title').textContent  = id ? 'Edit Product' : 'Add Product';
+  $('pf-name').value            = p?.name ?? '';
+  $('pf-category').value        = p?.category ?? (currentShop.categories[0] ?? '');
+  $('pf-price').value           = p?.price ?? '';
+  $('pf-desc').value            = p?.description ?? '';
+  $('pf-available').checked     = p?.available !== false;
+  refreshCategoryList();
+  $('product-modal').classList.add('show');
+  $('pf-name').focus();
+}
+
+function closeProductModal() {
+  $('product-modal').classList.remove('show');
+  editingId = null;
+}
+
+async function submitProductForm(e) {
+  e.preventDefault();
+  const payload = {
+    name:        $('pf-name').value.trim(),
+    category:    $('pf-category').value.trim(),
+    price:       parseFloat($('pf-price').value),
+    description: $('pf-desc').value.trim(),
+    available:   $('pf-available').checked
+  };
+  try {
+    if (editingId) {
+      const updated = await api('PUT', `/api/shops/${currentShop.id}/products/${editingId}`, payload);
+      const idx = products.findIndex(p => p.id === editingId);
+      if (idx !== -1) products[idx] = updated;
+      toast('Product updated ✓');
+    } else {
+      const created = await api('POST', `/api/shops/${currentShop.id}/products`, payload);
+      products.push(created);
+      if (payload.category && !currentShop.categories.includes(payload.category)) {
+        currentShop.categories.push(payload.category);
+        $('sf-categories').value = currentShop.categories.join(', ');
+      }
+      toast('Product added ✓');
+    }
+    closeProductModal();
+    renderProducts();
+  } catch (err) { toast(err.message, 'err'); }
+}
+
+async function deleteProduct(id, name) {
+  if (!confirm(`Delete "${name}"?`)) return;
+  try {
+    await api('DELETE', `/api/shops/${currentShop.id}/products/${id}`);
+    products = products.filter(p => p.id !== id);
+    renderProducts();
+    toast('Product deleted');
+  } catch (e) { toast(e.message, 'err'); }
+}
+
+// Close modal on backdrop click
+$('product-modal').addEventListener('click', e => { if (e.target === $('product-modal')) closeProductModal(); });
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Boot
+// ═════════════════════════════════════════════════════════════════════════════
+(async () => {
+  const saved = localStorage.getItem('sf_user');
+  if (saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      showView(currentUser.role);
+      if (currentUser.role === 'owner') await initOwner();
+      return;
+    } catch { localStorage.removeItem('sf_user'); }
+  }
+  await renderLoginCards();
+  showView('login');
+})();
+</script>
 </body>
 </html>
