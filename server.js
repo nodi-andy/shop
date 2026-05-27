@@ -129,29 +129,83 @@ app.get('/api/shops/:shopId/orders/:id', (req, res) => {
 app.post('/api/shops/:shopId/orders', (req, res) => {
   const shop = db.get('shops').find(s => s.id === req.params.shopId);
   if (!shop) return res.status(404).json({ error: 'Shop not found' });
+
+  const customerName = String(req.body.customerName || 'Guest').trim();
+  const rawItems = req.body.items || [];
+  if (!rawItems.length) return res.status(400).json({ error: 'Order must have items' });
+
+  const newItems = rawItems.map(i => ({
+    id: db.uid('i'),
+    productId: i.productId,
+    name: i.name,
+    price: i.price,
+    qty: i.qty,
+    status: 'pending'
+  }));
+
+  const orders = db.get('orders');
+  const existing = orders.find(
+    o => o.shopId === req.params.shopId && o.customerName === customerName && o.status === 'open'
+  );
+
+  if (existing) {
+    existing.items.push(...newItems);
+    existing.updatedAt = new Date().toISOString();
+    db.set('orders', orders);
+    broadcast(req.params.shopId, 'order:updated', existing);
+    return res.json(existing);
+  }
+
   const order = {
     id: db.uid('o'),
     shopId: req.params.shopId,
     customerId: req.body.customerId || null,
-    customerName: String(req.body.customerName || 'Guest').trim(),
-    items: req.body.items || [],
+    customerName,
+    items: newItems,
     note: String(req.body.note || '').trim(),
-    status: 'pending',
+    status: 'open',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
-  if (!order.items.length) return res.status(400).json({ error: 'Order must have items' });
-  const orders = db.get('orders');
   orders.push(order);
   db.set('orders', orders);
   broadcast(req.params.shopId, 'order:new', order);
   res.status(201).json(order);
 });
 
-app.patch('/api/shops/:shopId/orders/:id/status', requireAuth, requireShopRole('owner', 'kitchen', 'waiter'), (req, res) => {
-  const VALID = ['pending', 'preparing', 'ready', 'delivered', 'cancelled'];
+// Item-level status update (kitchen)
+app.patch('/api/shops/:shopId/orders/:id/items/:itemId/status', requireAuth, requireShopRole('owner', 'kitchen', 'waiter'), (req, res) => {
+  const VALID = ['pending', 'preparing', 'ready'];
   const { status } = req.body;
-  if (!VALID.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+  if (!VALID.includes(status)) return res.status(400).json({ error: 'Invalid item status' });
+  const orders = db.get('orders');
+  const order = orders.find(o => o.id === req.params.id && o.shopId === req.params.shopId);
+  if (!order) return res.status(404).json({ error: 'Not found' });
+  const item = order.items.find(i => i.id === req.params.itemId);
+  if (!item) return res.status(404).json({ error: 'Item not found' });
+  item.status = status;
+  order.updatedAt = new Date().toISOString();
+  db.set('orders', orders);
+  broadcast(req.params.shopId, 'order:updated', order);
+  res.json(order);
+});
+
+// Close the bill
+app.patch('/api/shops/:shopId/orders/:id/pay', requireAuth, requireShopRole('owner', 'waiter'), (req, res) => {
+  const orders = db.get('orders');
+  const i = orders.findIndex(o => o.id === req.params.id && o.shopId === req.params.shopId);
+  if (i === -1) return res.status(404).json({ error: 'Not found' });
+  orders[i].status = 'paid';
+  orders[i].updatedAt = new Date().toISOString();
+  db.set('orders', orders);
+  broadcast(req.params.shopId, 'order:updated', orders[i]);
+  res.json(orders[i]);
+});
+
+// Cancel only
+app.patch('/api/shops/:shopId/orders/:id/status', requireAuth, requireShopRole('owner', 'kitchen', 'waiter'), (req, res) => {
+  const { status } = req.body;
+  if (status !== 'cancelled') return res.status(400).json({ error: 'Invalid status — use /pay or /items/:id/status' });
   const orders = db.get('orders');
   const i = orders.findIndex(o => o.id === req.params.id && o.shopId === req.params.shopId);
   if (i === -1) return res.status(404).json({ error: 'Not found' });

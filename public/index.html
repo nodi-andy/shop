@@ -690,15 +690,14 @@ function setOwnerOrderFilter(status) {
 }
 
 function renderOwnerOrders() {
-  const ACTIVE = ['pending', 'preparing', 'ready'];
-  const ALL_STATUSES = ['all', 'pending', 'preparing', 'ready', 'delivered', 'cancelled'];
-  const STATUS_FILTER_LABEL = { all: 'All', pending: 'Pending', preparing: 'Preparing', ready: 'Ready', delivered: 'Delivered', cancelled: 'Cancelled' };
+  const ALL_STATUSES = ['all', 'open', 'paid', 'cancelled'];
+  const STATUS_FILTER_LABEL = { all: 'All', open: 'Open', paid: 'Paid', cancelled: 'Cancelled' };
 
   // Stats
-  const delivered = ownerOrders.filter(o => o.status === 'delivered');
-  const revenue   = delivered.reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.price * i.qty, 0), 0);
+  const paid    = ownerOrders.filter(o => o.status === 'paid');
+  const revenue = paid.reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.price * i.qty, 0), 0);
   $('ostat-total').textContent   = ownerOrders.length;
-  $('ostat-active').textContent  = ownerOrders.filter(o => ACTIVE.includes(o.status)).length;
+  $('ostat-active').textContent  = ownerOrders.filter(o => o.status === 'open').length;
   $('ostat-revenue').textContent = '€' + revenue.toFixed(2);
 
   // Filter chips
@@ -735,12 +734,19 @@ function renderOwnerOrders() {
         </div>
         <div class="flex items-center gap-3">
           <span class="text-xs text-slate-400">${timeAgo(o.createdAt)}</span>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLOR[o.status]}">${STATUS_LABEL[o.status]}</span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLOR[o.status] || ''}">${STATUS_LABEL[o.status] || o.status}</span>
         </div>
       </div>
       <div class="px-4 py-3">
-        <div class="text-sm text-slate-600 space-y-0.5">
-          ${o.items.map(i => `<div class="flex justify-between"><span>${esc(i.name)} × ${i.qty}</span><span class="text-slate-500">€${(i.price * i.qty).toFixed(2)}</span></div>`).join('')}
+        <div class="text-sm space-y-1">
+          ${o.items.map(i => `
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 flex-1 min-w-0">
+                <span class="px-1.5 py-0.5 rounded text-xs font-semibold ${STATUS_COLOR[i.status] || 'bg-slate-100 text-slate-500'}">${STATUS_LABEL[i.status] || i.status}</span>
+                <span class="text-slate-700 truncate">${esc(i.name)} × ${i.qty}</span>
+              </div>
+              <span class="text-slate-500 shrink-0">€${(i.price * i.qty).toFixed(2)}</span>
+            </div>`).join('')}
         </div>
         ${o.note ? `<div class="mt-2 text-xs text-amber-700 bg-amber-50 rounded-lg px-2.5 py-1.5">📝 ${esc(o.note)}</div>` : ''}
         <div class="mt-2 flex justify-end font-semibold text-slate-800 text-sm">Total: €${total.toFixed(2)}</div>
@@ -829,19 +835,28 @@ let waiterCart      = {};  // productId → { product, qty }
 let waiterOrderProds = []; // products for waiter's shop
 
 const STATUS_LABEL = {
+  open:      '🟡 Open',
   pending:   '⏳ Pending',
   preparing: '🍳 Preparing',
-  ready:     '✅ Ready for pickup',
-  delivered: '📦 Delivered',
+  ready:     '✅ Ready',
+  paid:      '💳 Paid',
   cancelled: '✕ Cancelled'
 };
 const STATUS_COLOR = {
+  open:      'bg-blue-100 text-blue-700',
   pending:   'bg-yellow-100 text-yellow-800',
   preparing: 'bg-blue-100 text-blue-800',
   ready:     'bg-emerald-100 text-emerald-800',
-  delivered: 'bg-slate-100 text-slate-600',
+  paid:      'bg-slate-100 text-slate-600',
   cancelled: 'bg-red-100 text-red-700'
 };
+
+function orderDerivedStatus(o) {
+  if (o.status === 'paid' || o.status === 'cancelled') return o.status;
+  if (o.items.every(i => i.status === 'ready')) return 'ready';
+  if (o.items.some(i => i.status === 'preparing')) return 'preparing';
+  return 'pending';
+}
 
 // ── Routing ───────────────────────────────────────────────────────────────────
 
@@ -869,7 +884,7 @@ async function initCustomer() {
     currentUser ? api('GET', '/api/orders').catch(() => []) : Promise.resolve([])
   ]);
   custShops = shops;
-  const openOrders = allOrders.filter(o => !['delivered', 'cancelled'].includes(o.status));
+  const openOrders = allOrders.filter(o => !['paid', 'cancelled'].includes(o.status));
   renderOpenOrders(openOrders);
   renderShopsList(shops);
   custGo('shops');
@@ -879,7 +894,7 @@ async function refreshOpenOrders() {
   if (!currentUser) return;
   try {
     const allOrders = await api('GET', '/api/orders');
-    const openOrders = allOrders.filter(o => !['delivered', 'cancelled'].includes(o.status));
+    const openOrders = allOrders.filter(o => !['paid', 'cancelled'].includes(o.status));
     renderOpenOrders(openOrders);
   } catch {}
 }
@@ -903,7 +918,7 @@ function renderOpenOrders(orders) {
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
               <span class="font-semibold text-slate-900 text-sm">${esc(shop?.name || 'Shop')}</span>
-              <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLOR[o.status]}">${STATUS_LABEL[o.status]}</span>
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLOR[orderDerivedStatus(o)]}">${STATUS_LABEL[orderDerivedStatus(o)]}</span>
             </div>
             <p class="text-xs text-slate-500 truncate">${o.items.map(i => `${i.qty}× ${esc(i.name)}`).join(', ')}</p>
             <p class="text-xs text-slate-400 mt-0.5">€${total.toFixed(2)} · #${o.id.slice(-6)}</p>
@@ -1139,15 +1154,16 @@ async function placeOrder() {
 
 function renderOrderCard(order) {
   const total    = order.items.reduce((s, i) => s + i.price * i.qty, 0);
-  const terminal = ['delivered', 'cancelled'].includes(order.status);
+  const derived  = orderDerivedStatus(order);
+  const terminal = ['paid', 'cancelled'].includes(order.status);
   $('order-status-card').innerHTML = `
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="bg-indigo-600 text-white p-5">
         <div class="text-sm text-indigo-200 mb-2">Order placed ✓</div>
         <div class="flex items-center justify-between gap-3">
           <span class="font-mono text-xs text-indigo-300">#${order.id}</span>
-          <span class="px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLOR[order.status] || 'bg-slate-100'}">
-            ${STATUS_LABEL[order.status] || order.status}
+          <span class="px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLOR[derived] || 'bg-slate-100'}">
+            ${STATUS_LABEL[derived] || derived}
           </span>
         </div>
       </div>
@@ -1183,16 +1199,16 @@ function startOrderSSE() {
     if (order.id !== custOrder?.id) return;
     custOrder = order;
     renderOrderCard(order);
-    if (['delivered', 'cancelled'].includes(order.status)) { custSSE.close(); custSSE = null; }
+    if (['paid', 'cancelled'].includes(order.status)) { custSSE.close(); custSSE = null; }
   });
   custSSE.onerror = () => {
     custSSE?.close(); custSSE = null;
-    if (custOrder && !['delivered', 'cancelled'].includes(custOrder?.status)) {
+    if (custOrder && !['paid', 'cancelled'].includes(custOrder?.status)) {
       custPoll = setTimeout(async () => {
         try {
           const o = await api('GET', `/api/shops/${custShopId}/orders/${custOrder.id}`);
           custOrder = o; renderOrderCard(o);
-          if (!['delivered','cancelled'].includes(o.status)) startOrderSSE();
+          if (!['paid','cancelled'].includes(o.status)) startOrderSSE();
         } catch { custPoll = setTimeout(startOrderSSE, 5000); }
       }, 3000);
     }
@@ -1256,45 +1272,35 @@ async function initKitchen() {
 }
 
 function renderKitchen() {
-  const all       = Object.values(kitchenOrders);
-  const pending   = all.filter(o => o.status === 'pending')  .sort((a,b) => new Date(a.createdAt)-new Date(b.createdAt));
-  const preparing = all.filter(o => o.status === 'preparing').sort((a,b) => new Date(a.createdAt)-new Date(b.createdAt));
-  const hasWork   = pending.length + preparing.length > 0;
+  const all    = Object.values(kitchenOrders);
+  // Show open orders that still have at least one non-ready item
+  const active = all.filter(o => o.status === 'open' && o.items.some(i => i.status !== 'ready'))
+                    .sort((a,b) => new Date(a.createdAt)-new Date(b.createdAt));
+
+  // "New Items" = nothing started yet; "In Progress" = at least one item preparing
+  const newOrders  = active.filter(o => o.items.every(i => i.status === 'pending'));
+  const inProgress = active.filter(o => o.items.some(i => i.status === 'preparing'));
+  const hasWork    = active.length > 0;
 
   $('kitchen-empty').classList.toggle('hidden', hasWork);
   $('kitchen-board').classList.toggle('hidden', !hasWork);
-  $('k-pending-count').textContent   = pending.length;
-  $('k-preparing-count').textContent = preparing.length;
+  $('k-pending-count').textContent   = newOrders.length;
+  $('k-preparing-count').textContent = inProgress.length;
 
-  $('k-pending').innerHTML = pending.length
-    ? kGroupedOrders(pending)
+  $('k-pending').innerHTML = newOrders.length
+    ? newOrders.map(o => kOrderCard(o)).join('')
     : '<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">No new orders</p>';
 
-  $('k-preparing').innerHTML = preparing.length
-    ? kGroupedOrders(preparing)
+  $('k-preparing').innerHTML = inProgress.length
+    ? inProgress.map(o => kOrderCard(o)).join('')
     : '<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">Nothing in progress</p>';
 }
 
-function kGroupedOrders(orders) {
-  const groups = {};
-  orders.forEach(o => { (groups[o.customerName] ??= []).push(o); });
-  return Object.entries(groups).map(([table, grp]) => {
-    if (grp.length === 1) return kOrderCard(grp[0]);
-    return `
-      <div class="rounded-2xl border-2 border-dashed border-orange-300 bg-orange-50/60 p-3 space-y-2">
-        <div class="flex items-center gap-2 px-1">
-          <span class="text-sm font-bold text-orange-700">🪑 ${esc(table)}</span>
-          <span class="text-xs text-orange-500 bg-orange-100 px-2 py-0.5 rounded-full">${grp.length} orders</span>
-        </div>
-        ${grp.map(o => kOrderCard(o)).join('')}
-      </div>`;
-  }).join('');
-}
-
 function kOrderCard(o) {
-  const isPending = o.status === 'pending';
+  const activeItems = o.items.filter(i => i.status !== 'ready');
+  const doneItems   = o.items.filter(i => i.status === 'ready');
   return `
-    <div class="bg-white rounded-2xl border ${isPending ? 'border-yellow-200' : 'border-blue-200'} shadow-sm p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
       <div class="flex items-start justify-between gap-2 mb-3">
         <div class="min-w-0">
           <span class="font-mono text-xs text-slate-400">#${o.id.slice(-6)}</span>
@@ -1302,29 +1308,36 @@ function kOrderCard(o) {
         </div>
         <span class="text-xs text-slate-400 shrink-0">${timeAgo(o.createdAt)}</span>
       </div>
-      <div class="space-y-1 mb-3">
-        ${o.items.map(i => `
-          <div class="flex gap-2 text-sm">
-            <span class="font-bold ${isPending ? 'text-yellow-600' : 'text-blue-600'} w-5 text-right shrink-0">${i.qty}×</span>
-            <span class="text-slate-800">${esc(i.name)}</span>
+      <div class="space-y-2">
+        ${activeItems.map(i => kItemRow(o.id, i)).join('')}
+        ${doneItems.map(i => `
+          <div class="flex items-center gap-2 text-sm opacity-40">
+            <span class="w-5 text-right shrink-0 font-bold text-slate-400">${i.qty}×</span>
+            <span class="flex-1 text-slate-500 line-through">${esc(i.name)}</span>
+            <span class="text-xs text-emerald-600">✓</span>
           </div>`).join('')}
       </div>
-      ${o.note ? `<div class="text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mb-3">📝 ${esc(o.note)}</div>` : ''}
-      ${isPending
-        ? `<button onclick="kitchenAction('${o.id}','preparing')"
-             class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl text-sm font-semibold transition">
-             Start Preparing →
-           </button>`
-        : `<button onclick="kitchenAction('${o.id}','ready')"
-             class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-sm font-semibold transition">
-             ✓ Mark Ready
-           </button>`}
+      ${o.note ? `<div class="text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mt-3">📝 ${esc(o.note)}</div>` : ''}
     </div>`;
 }
 
-async function kitchenAction(orderId, status) {
+function kItemRow(orderId, item) {
+  const isPending = item.status === 'pending';
+  return `
+    <div class="flex items-center gap-2 text-sm">
+      <span class="font-bold ${isPending ? 'text-yellow-600' : 'text-blue-600'} w-5 text-right shrink-0">${item.qty}×</span>
+      <span class="flex-1 text-slate-800">${esc(item.name)}</span>
+      ${isPending
+        ? `<button onclick="kitchenItemAction('${orderId}','${item.id}','preparing')"
+             class="text-xs px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium transition whitespace-nowrap">Start →</button>`
+        : `<button onclick="kitchenItemAction('${orderId}','${item.id}','ready')"
+             class="text-xs px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium transition whitespace-nowrap">✓ Ready</button>`}
+    </div>`;
+}
+
+async function kitchenItemAction(orderId, itemId, status) {
   try {
-    const updated = await api('PATCH', `/api/shops/${currentUser.shopId}/orders/${orderId}/status`, { status });
+    const updated = await api('PATCH', `/api/shops/${currentUser.shopId}/orders/${orderId}/items/${itemId}/status`, { status });
     kitchenOrders[orderId] = updated;
     renderKitchen();
   } catch (e) { toast(e.message, 'err'); }
@@ -1350,8 +1363,10 @@ async function initWaiter() {
     const prev = waiterOrders[order.id];
     waiterOrders[order.id] = order;
     if (waiterVibrateEnabled && navigator.vibrate) {
-      if (evt === 'order:new' || order.status === 'ready' || (prev && prev.status !== order.status)) {
-        navigator.vibrate(order.status === 'ready' ? [100, 50, 100] : [60]);
+      const prevReady = prev ? prev.items.filter(i => i.status === 'ready').length : 0;
+      const nowReady  = order.items.filter(i => i.status === 'ready').length;
+      if (evt === 'order:new' || nowReady > prevReady) {
+        navigator.vibrate(nowReady > 0 ? [100, 50, 100] : [60]);
       }
     }
     renderWaiter();
@@ -1370,63 +1385,83 @@ function toggleWaiterVibrate() {
 }
 
 function renderWaiter() {
-  const all       = Object.values(waiterOrders);
-  const ready     = all.filter(o => o.status === 'ready')    .sort((a,b) => new Date(a.updatedAt)-new Date(b.updatedAt));
-  const delivered = all.filter(o => o.status === 'delivered').sort((a,b) => new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0, 8);
+  const all  = Object.values(waiterOrders);
+  // Show open orders that have at least one ready item
+  const active = all.filter(o => o.status === 'open' && o.items.some(i => i.status === 'ready'))
+                    .sort((a,b) => new Date(a.updatedAt)-new Date(b.updatedAt));
+  const paid   = all.filter(o => o.status === 'paid')
+                    .sort((a,b) => new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0, 8);
 
-  $('w-ready-count').textContent = ready.length;
+  $('w-ready-count').textContent = active.length;
 
-  $('w-ready').innerHTML = ready.length
-    ? ready.map(o => wReadyCard(o)).join('')
+  $('w-ready').innerHTML = active.length
+    ? active.map(o => wReadyCard(o)).join('')
     : `<div class="text-center text-slate-400 py-12 border-2 border-dashed border-slate-200 rounded-2xl">
          <div class="text-4xl mb-2">⏳</div>
-         <p class="text-sm">Waiting for orders to be ready…</p>
+         <p class="text-sm">Waiting for items to be ready…</p>
        </div>`;
 
-  $('w-delivered').innerHTML = delivered.length
-    ? delivered.map(o => wDeliveredRow(o)).join('')
-    : '<p class="text-sm text-slate-400 text-center py-2">No deliveries yet</p>';
+  $('w-delivered').innerHTML = paid.length
+    ? paid.map(o => wPaidRow(o)).join('')
+    : '<p class="text-sm text-slate-400 text-center py-2">No closed bills yet</p>';
 }
 
 function wReadyCard(o) {
   const total = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+  const readyItems    = o.items.filter(i => i.status === 'ready');
+  const pendingItems  = o.items.filter(i => i.status !== 'ready');
   return `
     <div class="bg-white rounded-2xl border-2 border-emerald-200 shadow-sm p-4 mb-3">
-      <div class="flex items-center justify-between gap-2 mb-2">
+      <div class="flex items-center justify-between gap-2 mb-3">
         <div>
           <span class="font-mono text-xs text-slate-400">#${o.id.slice(-6)}</span>
           <span class="ml-2 font-semibold text-slate-900">${esc(o.customerName)}</span>
         </div>
         <span class="text-xs text-slate-400">${timeAgo(o.updatedAt)}</span>
       </div>
-      <p class="text-sm text-slate-600 mb-1">${o.items.map(i => `${i.qty}× ${esc(i.name)}`).join(', ')}</p>
-      <p class="text-sm font-semibold text-slate-700 mb-3">€${total.toFixed(2)}</p>
-      ${o.note ? `<p class="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-1.5 mb-3">📝 ${esc(o.note)}</p>` : ''}
-      <button onclick="waiterDeliver('${o.id}')"
+      ${readyItems.length ? `
+        <div class="mb-2">
+          <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-1">Ready to serve</div>
+          ${readyItems.map(i => `<div class="text-sm text-slate-700">${i.qty}× ${esc(i.name)}</div>`).join('')}
+        </div>` : ''}
+      ${pendingItems.length ? `
+        <div class="mb-2">
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Still preparing</div>
+          ${pendingItems.map(i => `<div class="text-sm text-slate-400">${i.qty}× ${esc(i.name)}</div>`).join('')}
+        </div>` : ''}
+      <div class="flex items-center justify-between mt-2 mb-3">
+        <span class="text-sm font-semibold text-slate-700">€${total.toFixed(2)}</span>
+        ${o.note ? `<span class="text-xs text-amber-700 bg-amber-50 rounded-lg px-2 py-1">📝 ${esc(o.note)}</span>` : ''}
+      </div>
+      <button onclick="waiterPay('${o.id}')"
         class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-sm font-semibold transition">
-        ✓ Delivered
+        💳 Close Bill
       </button>
     </div>`;
 }
 
-function wDeliveredRow(o) {
+function wPaidRow(o) {
+  const total = o.items.reduce((s, i) => s + i.price * i.qty, 0);
   return `
     <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 text-sm">
       <div class="flex items-center gap-2">
-        <span class="text-emerald-500 font-bold">✓</span>
+        <span class="text-emerald-500 font-bold">💳</span>
         <span class="font-medium text-slate-700">${esc(o.customerName)}</span>
         <span class="text-slate-400 font-mono text-xs">#${o.id.slice(-6)}</span>
       </div>
-      <span class="text-slate-400 text-xs">${timeAgo(o.updatedAt)}</span>
+      <div class="flex items-center gap-2 text-slate-400 text-xs">
+        <span>€${total.toFixed(2)}</span>
+        <span>${timeAgo(o.updatedAt)}</span>
+      </div>
     </div>`;
 }
 
-async function waiterDeliver(orderId) {
+async function waiterPay(orderId) {
   try {
-    const updated = await api('PATCH', `/api/shops/${currentUser.shopId}/orders/${orderId}/status`, { status: 'delivered' });
+    const updated = await api('PATCH', `/api/shops/${currentUser.shopId}/orders/${orderId}/pay`);
     waiterOrders[orderId] = updated;
     renderWaiter();
-    toast('Order delivered ✓');
+    toast('Bill closed ✓');
   } catch (e) { toast(e.message, 'err'); }
 }
 

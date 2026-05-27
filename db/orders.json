@@ -1,44 +1,38 @@
 [
   {
-    "id": "ompojn3j0ktr",
+    "id": "ompoks1ek1dv",
     "shopId": "shop1",
     "customerId": null,
-    "customerName": "Alice",
+    "customerName": "Table 5",
     "items": [
       {
+        "id": "impoks1ek3dk",
         "productId": "p1",
         "name": "Espresso",
         "price": 2.5,
-        "qty": 2
-      }
-    ],
-    "note": "No sugar",
-    "status": "delivered",
-    "createdAt": "2026-05-27T20:55:47.101Z",
-    "updatedAt": "2026-05-27T20:56:04.194Z"
-  },
-  {
-    "id": "ompojn3pmclg",
-    "shopId": "shop1",
-    "customerId": null,
-    "customerName": "Bob",
-    "items": [
-      {
-        "productId": "p2",
-        "name": "Latte",
-        "price": 3.5,
-        "qty": 1
+        "qty": 1,
+        "status": "preparing"
       },
       {
+        "id": "impoks1ekp7r",
+        "productId": "p2",
+        "name": "Cappuccino",
+        "price": 3.5,
+        "qty": 2,
+        "status": "pending"
+      },
+      {
+        "id": "impoks20e18d",
         "productId": "p3",
-        "name": "Croissant",
-        "price": 2,
-        "qty": 2
+        "name": "Water",
+        "price": 1,
+        "qty": 2,
+        "status": "pending"
       }
     ],
     "note": "",
-    "status": "pending",
-    "createdAt": "2026-05-27T20:55:47.338Z",
-    "updatedAt": "2026-05-27T20:55:47.338Z"
+    "status": "paid",
+    "createdAt": "2026-05-27T21:27:37.244Z",
+    "updatedAt": "2026-05-27T21:27:46.478Z"
   }
 ]
