@@ -260,6 +260,41 @@
   </div>
 </div>
 
+<!-- ══════════════════════════ CASHIER VIEW ══════════════════════════════════ -->
+<div data-view="cashier" class="min-h-screen flex flex-col bg-slate-50">
+  <nav class="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">💳</span>
+        <span class="font-bold text-slate-800">Cashier</span>
+        <span class="text-slate-300 hidden sm:block">|</span>
+        <span id="cashier-shop-name" class="text-slate-500 text-sm hidden sm:block"></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="flex items-center gap-1.5 text-xs text-slate-400">
+          <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="cashier-dot"></span>Live
+        </span>
+        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-2xl mx-auto w-full px-4 py-6">
+    <div class="mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+        <h3 class="font-bold text-slate-700">Open Bills</h3>
+        <span id="cashier-open-count" class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+      </div>
+      <div id="cashier-open-list"></div>
+    </div>
+    <div>
+      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Recent Payments</h4>
+      <div id="cashier-paid-list" class="space-y-2"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════════════ WAITER NEW ORDER MODAL ════════════════════════════ -->
 <div id="waiter-order-modal" class="modal-bg fixed inset-0 bg-black/40 z-50 items-center justify-center p-4">
   <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[85vh]">
@@ -470,10 +505,11 @@ function showView(name) {
 // Login
 // ═════════════════════════════════════════════════════════════════════════════
 const ROLE_META = {
-  owner:    { emoji: '👨‍💼', label: 'Shop Owner',  color: 'border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50' },
-  kitchen:  { emoji: '👨‍🍳', label: 'Kitchen',     color: 'border-orange-200 hover:border-orange-400 hover:bg-orange-50' },
-  waiter:   { emoji: '🛎️',  label: 'Waiter',      color: 'border-teal-200   hover:border-teal-400   hover:bg-teal-50'   },
-  customer: { emoji: '👤',  label: 'Customer',    color: 'border-sky-200    hover:border-sky-400    hover:bg-sky-50'    },
+  owner:    { emoji: '👨‍💼', label: 'Shop Owner',  color: 'border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50'  },
+  kitchen:  { emoji: '👨‍🍳', label: 'Kitchen',     color: 'border-orange-200 hover:border-orange-400 hover:bg-orange-50'  },
+  waiter:   { emoji: '🛎️',  label: 'Waiter',      color: 'border-teal-200   hover:border-teal-400   hover:bg-teal-50'    },
+  cashier:  { emoji: '💳',  label: 'Cashier',     color: 'border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50' },
+  customer: { emoji: '👤',  label: 'Customer',    color: 'border-sky-200    hover:border-sky-400    hover:bg-sky-50'     },
 };
 
 async function renderLoginCards() {
@@ -498,6 +534,7 @@ async function loginAs(userId) {
   if (currentUser.role === 'customer') await initCustomer();
   if (currentUser.role === 'kitchen')  await initKitchen();
   if (currentUser.role === 'waiter')   await initWaiter();
+  if (currentUser.role === 'cashier')  await initCashier();
 }
 
 function logout() {
@@ -1429,14 +1466,10 @@ function wReadyCard(o) {
           <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Still preparing</div>
           ${pendingItems.map(i => `<div class="text-sm text-slate-400">${i.qty}× ${esc(i.name)}</div>`).join('')}
         </div>` : ''}
-      <div class="flex items-center justify-between mt-2 mb-3">
+      <div class="flex items-center justify-between mt-2">
         <span class="text-sm font-semibold text-slate-700">€${total.toFixed(2)}</span>
         ${o.note ? `<span class="text-xs text-amber-700 bg-amber-50 rounded-lg px-2 py-1">📝 ${esc(o.note)}</span>` : ''}
       </div>
-      <button onclick="waiterPay('${o.id}')"
-        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-xl text-sm font-semibold transition">
-        💳 Close Bill
-      </button>
     </div>`;
 }
 
@@ -1574,6 +1607,107 @@ async function placeWaiterOrder() {
 $('waiter-order-modal').addEventListener('click', e => { if (e.target === $('waiter-order-modal')) closeWaiterOrder(); });
 
 // ═════════════════════════════════════════════════════════════════════════════
+// Cashier
+// ═════════════════════════════════════════════════════════════════════════════
+
+let cashierOrders = {};
+let cashierSSE    = null;
+
+async function initCashier() {
+  const shop = await api('GET', `/api/shops/${currentUser.shopId}`);
+  $('cashier-shop-name').textContent = shop.name;
+
+  const orders = await api('GET', `/api/shops/${currentUser.shopId}/orders`);
+  cashierOrders = Object.fromEntries(orders.map(o => [o.id, o]));
+  renderCashier();
+
+  cashierSSE = connectSSE(currentUser.shopId, (_evt, order) => {
+    cashierOrders[order.id] = order;
+    renderCashier();
+  });
+  $('cashier-dot').className = 'w-2 h-2 rounded-full bg-emerald-400 inline-block';
+}
+
+function renderCashier() {
+  const all  = Object.values(cashierOrders);
+  const open = all.filter(o => o.status === 'open')
+                  .sort((a,b) => new Date(a.createdAt)-new Date(b.createdAt));
+  const paid = all.filter(o => o.status === 'paid')
+                  .sort((a,b) => new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0, 8);
+
+  $('cashier-open-count').textContent = open.length;
+
+  $('cashier-open-list').innerHTML = open.length
+    ? open.map(o => cashierOrderCard(o)).join('')
+    : `<div class="text-center text-slate-400 py-12 border-2 border-dashed border-slate-200 rounded-2xl">
+         <div class="text-4xl mb-2">💳</div>
+         <p class="text-sm">No open bills</p>
+       </div>`;
+
+  $('cashier-paid-list').innerHTML = paid.length
+    ? paid.map(o => cashierPaidRow(o)).join('')
+    : '<p class="text-sm text-slate-400 text-center py-2">No payments yet</p>';
+}
+
+function cashierOrderCard(o) {
+  const total    = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+  const allReady = o.items.every(i => i.status === 'ready');
+  return `
+    <div class="bg-white rounded-2xl border-2 ${allReady ? 'border-emerald-200' : 'border-slate-200'} shadow-sm p-4 mb-3">
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="font-semibold text-slate-900">${esc(o.customerName)}</span>
+          <span class="font-mono text-xs text-slate-400">#${o.id.slice(-6)}</span>
+        </div>
+        <span class="text-xs text-slate-400">${timeAgo(o.createdAt)}</span>
+      </div>
+      <div class="space-y-1.5 mb-3">
+        ${o.items.map(i => `
+          <div class="flex items-center justify-between text-sm">
+            <div class="flex items-center gap-2">
+              <span class="px-1.5 py-0.5 rounded text-xs font-semibold ${STATUS_COLOR[i.status] || ''}">${STATUS_LABEL[i.status] || ''}</span>
+              <span class="text-slate-700">${i.qty}× ${esc(i.name)}</span>
+            </div>
+            <span class="text-slate-500">€${(i.price * i.qty).toFixed(2)}</span>
+          </div>`).join('')}
+      </div>
+      ${o.note ? `<div class="text-xs text-amber-700 bg-amber-50 rounded-lg px-2.5 py-1.5 mb-3">📝 ${esc(o.note)}</div>` : ''}
+      <div class="flex items-center justify-between">
+        <span class="font-bold text-lg text-slate-800">€${total.toFixed(2)}</span>
+        <button onclick="cashierCloseBill('${o.id}')"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition">
+          💳 Close Bill
+        </button>
+      </div>
+    </div>`;
+}
+
+function cashierPaidRow(o) {
+  const total = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+  return `
+    <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="text-emerald-500">💳</span>
+        <span class="font-medium text-slate-700">${esc(o.customerName)}</span>
+        <span class="text-slate-400 font-mono text-xs">#${o.id.slice(-6)}</span>
+      </div>
+      <div class="flex items-center gap-3 text-slate-400 text-xs">
+        <span class="font-semibold text-slate-600">€${total.toFixed(2)}</span>
+        <span>${timeAgo(o.updatedAt)}</span>
+      </div>
+    </div>`;
+}
+
+async function cashierCloseBill(orderId) {
+  try {
+    const updated = await api('PATCH', `/api/shops/${currentUser.shopId}/orders/${orderId}/pay`);
+    cashierOrders[orderId] = updated;
+    renderCashier();
+    toast('Bill closed ✓');
+  } catch (e) { toast(e.message, 'err'); }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
 // Boot
 // ═════════════════════════════════════════════════════════════════════════════
 (async () => {
@@ -1586,6 +1720,7 @@ $('waiter-order-modal').addEventListener('click', e => { if (e.target === $('wai
       if (currentUser.role === 'customer') await initCustomer();
       if (currentUser.role === 'kitchen')  await initKitchen();
       if (currentUser.role === 'waiter')   await initWaiter();
+      if (currentUser.role === 'cashier')  await initCashier();
       return;
     } catch { localStorage.removeItem('sf_user'); }
   }

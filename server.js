@@ -112,7 +112,7 @@ app.get('/api/orders', requireAuth, (req, res) => {
   res.json(db.get('orders').filter(o => o.customerId === req.user.id));
 });
 
-app.get('/api/shops/:shopId/orders', requireAuth, requireShopRole('owner', 'kitchen', 'waiter', 'customer'), (req, res) => {
+app.get('/api/shops/:shopId/orders', requireAuth, requireShopRole('owner', 'kitchen', 'waiter', 'cashier', 'customer'), (req, res) => {
   const all = db.get('orders').filter(o => o.shopId === req.params.shopId);
   if (req.user.role === 'customer') {
     res.json(all.filter(o => o.customerId === req.user.id));
@@ -191,7 +191,7 @@ app.patch('/api/shops/:shopId/orders/:id/items/:itemId/status', requireAuth, req
 });
 
 // Close the bill
-app.patch('/api/shops/:shopId/orders/:id/pay', requireAuth, requireShopRole('owner', 'waiter'), (req, res) => {
+app.patch('/api/shops/:shopId/orders/:id/pay', requireAuth, requireShopRole('owner', 'cashier'), (req, res) => {
   const orders = db.get('orders');
   const i = orders.findIndex(o => o.id === req.params.id && o.shopId === req.params.shopId);
   if (i === -1) return res.status(404).json({ error: 'Not found' });
