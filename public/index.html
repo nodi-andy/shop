@@ -65,6 +65,10 @@
         class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition">
         📦 Products
       </button>
+      <button data-tab-btn="orders" onclick="ownerTab('orders')"
+        class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition">
+        🧾 Orders
+      </button>
     </div>
   </div>
 
@@ -142,6 +146,31 @@
 
     <!-- Product list -->
     <div id="product-list"></div>
+  </div>
+
+  <!-- Orders pane -->
+  <div data-tab-pane="orders" class="max-w-5xl mx-auto px-4 py-6">
+    <!-- Stats -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
+        <div id="ostat-total" class="text-2xl font-bold text-indigo-600">0</div>
+        <div class="text-xs text-slate-500 mt-0.5">Total Orders</div>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
+        <div id="ostat-active" class="text-2xl font-bold text-amber-500">0</div>
+        <div class="text-xs text-slate-500 mt-0.5">Active</div>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
+        <div id="ostat-revenue" class="text-2xl font-bold text-emerald-600">€0</div>
+        <div class="text-xs text-slate-500 mt-0.5">Revenue</div>
+      </div>
+    </div>
+
+    <!-- Status filters -->
+    <div id="order-status-filters" class="flex flex-wrap gap-2 mb-4"></div>
+
+    <!-- Order list -->
+    <div id="owner-order-list"></div>
   </div>
 </div>
 
@@ -395,6 +424,9 @@ let currentShop  = null;
 let products     = [];
 let editingId    = null;
 let activeFilter = 'All';
+let ownerOrders      = [];
+let ownerOrderFilter = 'all';
+let ownerSSE         = null;
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Utils
@@ -495,6 +527,20 @@ function ownerTab(tab) {
   document.querySelectorAll('[data-tab-pane]').forEach(pane => {
     pane.classList.toggle('show', pane.dataset.tabPane === tab);
   });
+  if (tab === 'orders') {
+    loadOwnerOrders();
+    if (!ownerSSE) ownerSSE = connectSSE(currentShop.id, (evt, data) => {
+      if (evt === 'order:new') {
+        ownerOrders.unshift(data);
+      } else if (evt === 'order:updated') {
+        const idx = ownerOrders.findIndex(o => o.id === data.id);
+        if (idx !== -1) ownerOrders[idx] = data; else ownerOrders.unshift(data);
+      }
+      renderOwnerOrders();
+    });
+  } else {
+    if (ownerSSE) { ownerSSE.close(); ownerSSE = null; }
+  }
 }
 
 // ── Settings ──────────────────────────────────────────────────────────────────
@@ -627,6 +673,78 @@ function setFilter(cat) {
 
 function refreshCategoryList() {
   $('category-list').innerHTML = currentShop.categories.map(c => `<option value="${esc(c)}">`).join('');
+}
+
+// ── Owner Orders ───────────────────────────────────────────────────────────────
+async function loadOwnerOrders() {
+  ownerOrders = await api('GET', `/api/shops/${currentShop.id}/orders`);
+  ownerOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  renderOwnerOrders();
+}
+
+function setOwnerOrderFilter(status) {
+  ownerOrderFilter = status;
+  renderOwnerOrders();
+}
+
+function renderOwnerOrders() {
+  const ACTIVE = ['pending', 'preparing', 'ready'];
+  const ALL_STATUSES = ['all', 'pending', 'preparing', 'ready', 'delivered', 'cancelled'];
+  const STATUS_FILTER_LABEL = { all: 'All', pending: 'Pending', preparing: 'Preparing', ready: 'Ready', delivered: 'Delivered', cancelled: 'Cancelled' };
+
+  // Stats
+  const delivered = ownerOrders.filter(o => o.status === 'delivered');
+  const revenue   = delivered.reduce((sum, o) => sum + o.items.reduce((s, i) => s + i.price * i.qty, 0), 0);
+  $('ostat-total').textContent   = ownerOrders.length;
+  $('ostat-active').textContent  = ownerOrders.filter(o => ACTIVE.includes(o.status)).length;
+  $('ostat-revenue').textContent = '€' + revenue.toFixed(2);
+
+  // Filter chips
+  $('order-status-filters').innerHTML = ALL_STATUSES.map(s => `
+    <button onclick="setOwnerOrderFilter('${s}')"
+      class="px-3 py-1.5 rounded-full text-sm font-medium transition ${
+        ownerOrderFilter === s
+          ? 'bg-indigo-600 text-white shadow-sm'
+          : 'bg-white border border-slate-300 text-slate-600 hover:border-indigo-400'
+      }">
+      ${STATUS_FILTER_LABEL[s]}
+    </button>`).join('');
+
+  // Filtered list
+  const filtered = ownerOrderFilter === 'all' ? ownerOrders : ownerOrders.filter(o => o.status === ownerOrderFilter);
+
+  if (!filtered.length) {
+    $('owner-order-list').innerHTML = `
+      <div class="text-center py-16 text-slate-400">
+        <div class="text-5xl mb-3">🧾</div>
+        <p>${ownerOrders.length === 0 ? 'No orders yet.' : 'No orders match this filter.'}</p>
+      </div>`;
+    return;
+  }
+
+  $('owner-order-list').innerHTML = filtered.map(o => {
+    const total = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+    return `
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm mb-3 overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <span class="font-semibold text-slate-800">${esc(o.customerName)}</span>
+          <span class="text-xs text-slate-400">#${o.id.slice(-6)}</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xs text-slate-400">${timeAgo(o.createdAt)}</span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLOR[o.status]}">${STATUS_LABEL[o.status]}</span>
+        </div>
+      </div>
+      <div class="px-4 py-3">
+        <div class="text-sm text-slate-600 space-y-0.5">
+          ${o.items.map(i => `<div class="flex justify-between"><span>${esc(i.name)} × ${i.qty}</span><span class="text-slate-500">€${(i.price * i.qty).toFixed(2)}</span></div>`).join('')}
+        </div>
+        ${o.note ? `<div class="mt-2 text-xs text-amber-700 bg-amber-50 rounded-lg px-2.5 py-1.5">📝 ${esc(o.note)}</div>` : ''}
+        <div class="mt-2 flex justify-end font-semibold text-slate-800 text-sm">Total: €${total.toFixed(2)}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ── Product modal ─────────────────────────────────────────────────────────────
@@ -1209,8 +1327,14 @@ async function initWaiter() {
   waiterOrders = Object.fromEntries(orders.map(o => [o.id, o]));
   renderWaiter();
 
-  waiterSSE = connectSSE(currentUser.shopId, (_evt, order) => {
+  waiterSSE = connectSSE(currentUser.shopId, (evt, order) => {
+    const prev = waiterOrders[order.id];
     waiterOrders[order.id] = order;
+    if (navigator.vibrate) {
+      if (evt === 'order:new' || order.status === 'ready' || (prev && prev.status !== order.status)) {
+        navigator.vibrate(order.status === 'ready' ? [100, 50, 100] : [60]);
+      }
+    }
     renderWaiter();
   });
   $('waiter-dot').className = 'w-2 h-2 rounded-full bg-emerald-400 inline-block';
