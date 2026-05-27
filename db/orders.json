@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "id": "ompojn3j0ktr",
+    "shopId": "shop1",
+    "customerId": null,
+    "customerName": "Alice",
+    "items": [
+      {
+        "productId": "p1",
+        "name": "Espresso",
+        "price": 2.5,
+        "qty": 2
+      }
+    ],
+    "note": "No sugar",
+    "status": "delivered",
+    "createdAt": "2026-05-27T20:55:47.101Z",
+    "updatedAt": "2026-05-27T20:56:04.194Z"
+  },
+  {
+    "id": "ompojn3pmclg",
+    "shopId": "shop1",
+    "customerId": null,
+    "customerName": "Bob",
+    "items": [
+      {
+        "productId": "p2",
+        "name": "Latte",
+        "price": 3.5,
+        "qty": 1
+      },
+      {
+        "productId": "p3",
+        "name": "Croissant",
+        "price": 2,
+        "qty": 2
+      }
+    ],
+    "note": "",
+    "status": "pending",
+    "createdAt": "2026-05-27T20:55:47.338Z",
+    "updatedAt": "2026-05-27T20:55:47.338Z"
+  }
+]

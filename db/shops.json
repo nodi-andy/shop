@@ -1,7 +1,7 @@
 [
   {
     "id": "shop1",
-    "name": "Andy's Café",
+    "name": "Demo's Café",
     "description": "Fresh coffee, food & snacks in the heart of the city.",
     "ownerId": "u1",
     "categories": ["Coffee", "Cold Drinks", "Food", "Snacks"],

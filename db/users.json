@@ -1,5 +1,5 @@
 [
-  { "id": "u1", "name": "Andy",    "role": "owner",    "shopId": "shop1" },
+  { "id": "u1", "name": "Owner",    "role": "owner",    "shopId": "shop1" },
   { "id": "u2", "name": "Kitchen", "role": "kitchen",  "shopId": "shop1" },
   { "id": "u3", "name": "Waiter",  "role": "waiter",   "shopId": "shop1" },
   { "id": "u4", "name": "Alice",   "role": "customer", "shopId": null },
