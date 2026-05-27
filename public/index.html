@@ -236,6 +236,8 @@
         <span class="flex items-center gap-1.5 text-xs text-slate-400">
           <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="waiter-dot"></span>Live
         </span>
+        <button id="waiter-vibrate-btn" onclick="toggleWaiterVibrate()"
+          class="text-base px-1 opacity-30 hover:opacity-70 transition" title="Tap to enable vibration alerts">📳</button>
         <button onclick="openWaiterOrder()" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition font-medium">+ New Order</button>
         <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition">Logout</button>
       </div>
@@ -1265,12 +1267,28 @@ function renderKitchen() {
   $('k-preparing-count').textContent = preparing.length;
 
   $('k-pending').innerHTML = pending.length
-    ? pending.map(o => kOrderCard(o)).join('')
+    ? kGroupedOrders(pending)
     : '<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">No new orders</p>';
 
   $('k-preparing').innerHTML = preparing.length
-    ? preparing.map(o => kOrderCard(o)).join('')
+    ? kGroupedOrders(preparing)
     : '<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">Nothing in progress</p>';
+}
+
+function kGroupedOrders(orders) {
+  const groups = {};
+  orders.forEach(o => { (groups[o.customerName] ??= []).push(o); });
+  return Object.entries(groups).map(([table, grp]) => {
+    if (grp.length === 1) return kOrderCard(grp[0]);
+    return `
+      <div class="rounded-2xl border-2 border-dashed border-orange-300 bg-orange-50/60 p-3 space-y-2">
+        <div class="flex items-center gap-2 px-1">
+          <span class="text-sm font-bold text-orange-700">🪑 ${esc(table)}</span>
+          <span class="text-xs text-orange-500 bg-orange-100 px-2 py-0.5 rounded-full">${grp.length} orders</span>
+        </div>
+        ${grp.map(o => kOrderCard(o)).join('')}
+      </div>`;
+  }).join('');
 }
 
 function kOrderCard(o) {
@@ -1316,8 +1334,9 @@ async function kitchenAction(orderId, status) {
 // Waiter
 // ═════════════════════════════════════════════════════════════════════════════
 
-let waiterOrders = {};
-let waiterSSE    = null;
+let waiterOrders         = {};
+let waiterSSE            = null;
+let waiterVibrateEnabled = false;
 
 async function initWaiter() {
   const shop = await api('GET', `/api/shops/${currentUser.shopId}`);
@@ -1330,7 +1349,7 @@ async function initWaiter() {
   waiterSSE = connectSSE(currentUser.shopId, (evt, order) => {
     const prev = waiterOrders[order.id];
     waiterOrders[order.id] = order;
-    if (navigator.vibrate) {
+    if (waiterVibrateEnabled && navigator.vibrate) {
       if (evt === 'order:new' || order.status === 'ready' || (prev && prev.status !== order.status)) {
         navigator.vibrate(order.status === 'ready' ? [100, 50, 100] : [60]);
       }
@@ -1338,6 +1357,16 @@ async function initWaiter() {
     renderWaiter();
   });
   $('waiter-dot').className = 'w-2 h-2 rounded-full bg-emerald-400 inline-block';
+}
+
+function toggleWaiterVibrate() {
+  if (!navigator.vibrate) return;
+  waiterVibrateEnabled = !waiterVibrateEnabled;
+  const btn = $('waiter-vibrate-btn');
+  btn.classList.toggle('opacity-30', !waiterVibrateEnabled);
+  btn.classList.toggle('opacity-100', waiterVibrateEnabled);
+  btn.title = waiterVibrateEnabled ? 'Vibration on — tap to disable' : 'Tap to enable vibration alerts';
+  if (waiterVibrateEnabled) navigator.vibrate([50, 30, 50]);
 }
 
 function renderWaiter() {
