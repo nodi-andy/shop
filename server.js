@@ -175,7 +175,7 @@ app.post('/api/shops/:shopId/orders', (req, res) => {
 
 // Item-level status update (kitchen)
 app.patch('/api/shops/:shopId/orders/:id/items/:itemId/status', requireAuth, requireShopRole('owner', 'kitchen', 'waiter'), (req, res) => {
-  const VALID = ['pending', 'preparing', 'ready'];
+  const VALID = ['pending', 'preparing', 'ready', 'delivered'];
   const { status } = req.body;
   if (!VALID.includes(status)) return res.status(400).json({ error: 'Invalid item status' });
   const orders = db.get('orders');
