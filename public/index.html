@@ -1277,9 +1277,9 @@ function renderKitchen() {
   const active = all.filter(o => o.status === 'open' && o.items.some(i => i.status !== 'ready'))
                     .sort((a,b) => new Date(a.createdAt)-new Date(b.createdAt));
 
-  // "New Items" = nothing started yet; "In Progress" = at least one item preparing
+  // "New Items" = all items still pending; "In Progress" = any item started or done
   const newOrders  = active.filter(o => o.items.every(i => i.status === 'pending'));
-  const inProgress = active.filter(o => o.items.some(i => i.status === 'preparing'));
+  const inProgress = active.filter(o => !o.items.every(i => i.status === 'pending'));
   const hasWork    = active.length > 0;
 
   $('kitchen-empty').classList.toggle('hidden', hasWork);
