@@ -34,5 +34,33 @@
     "status": "paid",
     "createdAt": "2026-05-27T21:27:37.244Z",
     "updatedAt": "2026-05-27T21:27:46.478Z"
+  },
+  {
+    "id": "ompol2lpju9y",
+    "shopId": "shop1",
+    "customerId": null,
+    "customerName": "Table 9",
+    "items": [
+      {
+        "id": "impol2lpihac",
+        "productId": "p1",
+        "name": "Espresso",
+        "price": 2.5,
+        "qty": 1,
+        "status": "ready"
+      },
+      {
+        "id": "impol2lpiqsz",
+        "productId": "p2",
+        "name": "Cappuccino",
+        "price": 3.5,
+        "qty": 1,
+        "status": "pending"
+      }
+    ],
+    "note": "",
+    "status": "open",
+    "createdAt": "2026-05-27T21:35:50.119Z",
+    "updatedAt": "2026-05-27T21:35:50.695Z"
   }
 ]
