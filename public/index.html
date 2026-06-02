@@ -20,18 +20,111 @@
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen antialiased">
 
+<!-- ══════════════════════════ LANDING VIEW ══════════════════════════════════ -->
+<div data-view="landing" class="show min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 overflow-y-auto">
+
+  <!-- Nav -->
+  <nav class="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <span class="text-2xl">🛒</span>
+        <span class="font-black text-white text-xl tracking-tight">ShopFlow</span>
+      </div>
+      <button onclick="goToApp()"
+        class="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-400 text-white px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-lg shadow-indigo-900/50">
+        <span data-i18n="landing_launch_nav">Launch Demo</span>
+        <span>→</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="pt-20 pb-16 px-6 text-center">
+    <div class="max-w-3xl mx-auto">
+      <div class="inline-flex items-center gap-2 bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 px-4 py-1.5 rounded-full text-sm font-semibold mb-8">
+        ✨ <span data-i18n="landing_badge">Full-stack restaurant management</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-6">
+        <span data-i18n="landing_h1_1">Run your restaurant</span><br>
+        <span class="text-indigo-400" data-i18n="landing_h1_2">smarter, faster</span>
+      </h1>
+      <p class="text-lg text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed" data-i18n="landing_subtitle">
+        One app for your entire team — from kitchen to cashier. Real-time updates, works on any device.
+      </p>
+      <button onclick="goToApp()"
+        class="inline-flex items-center gap-3 bg-indigo-500 hover:bg-indigo-400 text-white px-8 py-4 rounded-2xl text-lg font-bold shadow-2xl shadow-indigo-900 hover:-translate-y-0.5 transition-all">
+        <span data-i18n="landing_cta">Try the Demo — it's free</span>
+        <span>→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Features grid -->
+  <div class="max-w-6xl mx-auto px-6 pb-28">
+    <h2 class="text-center text-xl font-bold text-slate-400 uppercase tracking-wider mb-8" data-i18n="landing_features_title">Everything your team needs</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:-translate-y-0.5 transition-all">
+        <div class="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center text-2xl mb-4">👨‍💼</div>
+        <h3 class="font-bold text-white text-base mb-2" data-i18n="feat_owner_title">Owner Dashboard</h3>
+        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="feat_owner_desc">Manage products, track live orders and revenue in real time, set your opening hours.</p>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:-translate-y-0.5 transition-all">
+        <div class="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center text-2xl mb-4">👨‍🍳</div>
+        <h3 class="font-bold text-white text-base mb-2" data-i18n="feat_kitchen_title">Kitchen Display</h3>
+        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="feat_kitchen_desc">Live ticket board with item-level status. Start and mark items ready as you cook.</p>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:-translate-y-0.5 transition-all">
+        <div class="w-12 h-12 bg-teal-500/20 rounded-xl flex items-center justify-center text-2xl mb-4">🛎️</div>
+        <h3 class="font-bold text-white text-base mb-2" data-i18n="feat_waiter_title">Waiter Service</h3>
+        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="feat_waiter_desc">Get alerted when items are ready. Place new orders and deliver with one tap — vibration alerts included.</p>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:-translate-y-0.5 transition-all">
+        <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-2xl mb-4">💳</div>
+        <h3 class="font-bold text-white text-base mb-2" data-i18n="feat_cashier_title">Cashier</h3>
+        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="feat_cashier_desc">See all open bills at a glance. Close them with a single tap and track payment history.</p>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:-translate-y-0.5 transition-all">
+        <div class="w-12 h-12 bg-sky-500/20 rounded-xl flex items-center justify-center text-2xl mb-4">👤</div>
+        <h3 class="font-bold text-white text-base mb-2" data-i18n="feat_customer_title">Customer Ordering</h3>
+        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="feat_customer_desc">Browse the menu, build a cart, and track your order in real time — no app download needed.</p>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:-translate-y-0.5 transition-all">
+        <div class="w-12 h-12 bg-violet-500/20 rounded-xl flex items-center justify-center text-2xl mb-4">⚡</div>
+        <h3 class="font-bold text-white text-base mb-2" data-i18n="feat_realtime_title">Real-time Sync</h3>
+        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="feat_realtime_desc">All roles update instantly via live server events. No polling, no page refreshes — ever.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Floating CTA -->
+  <div class="fixed bottom-8 right-8 z-50">
+    <button onclick="goToApp()"
+      class="flex items-center gap-2.5 bg-indigo-500 hover:bg-indigo-400 text-white pl-5 pr-6 py-3.5 rounded-2xl font-bold text-sm shadow-2xl shadow-indigo-900/70 hover:-translate-y-0.5 transition-all">
+      <span class="text-base">🚀</span>
+      <span data-i18n="landing_float_btn">Launch App</span>
+    </button>
+  </div>
+</div>
+
 <!-- ═══════════════════════════ LOGIN VIEW ═══════════════════════════════════ -->
-<div data-view="login" class="show min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-100 items-center justify-center p-6">
+<div data-view="login" class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-100 items-center justify-center p-6">
   <div class="w-full max-w-2xl">
     <div class="text-center mb-10">
       <div class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-semibold mb-4">
         🛒 ShopFlow
       </div>
-      <h1 class="text-3xl font-bold text-slate-900">Welcome back</h1>
-      <p class="text-slate-500 mt-2">Select your role to continue</p>
+      <h1 class="text-3xl font-bold text-slate-900" data-i18n="welcome_back">Welcome back</h1>
+      <p class="text-slate-500 mt-2" data-i18n="select_role">Select your role to continue</p>
     </div>
     <div id="login-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4"></div>
-    <p class="text-center text-xs text-slate-400 mt-8">Demo app — click any card to log in instantly</p>
+    <p class="text-center text-xs text-slate-400 mt-8" data-i18n="demo_hint">Demo app — click any card to log in instantly</p>
   </div>
 </div>
 
@@ -47,7 +140,7 @@
       </div>
       <div class="flex items-center gap-3">
         <span class="text-sm text-slate-500 hidden sm:block">👤 <span id="owner-user-name"></span></span>
-        <button onclick="logout()" class="text-sm text-slate-500 hover:text-red-500 transition border border-slate-200 hover:border-red-300 px-3 py-1.5 rounded-lg">
+        <button onclick="logout()" class="text-sm text-slate-500 hover:text-red-500 transition border border-slate-200 hover:border-red-300 px-3 py-1.5 rounded-lg" data-i18n="logout">
           Logout
         </button>
       </div>
@@ -58,15 +151,15 @@
   <div class="bg-white border-b border-slate-200">
     <div class="max-w-5xl mx-auto px-4 flex gap-1 pt-3">
       <button data-tab-btn="settings" onclick="ownerTab('settings')"
-        class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition">
+        class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition" data-i18n="tab_settings">
         ⚙️ Shop Settings
       </button>
       <button data-tab-btn="products" onclick="ownerTab('products')"
-        class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition">
+        class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition" data-i18n="tab_products">
         📦 Products
       </button>
       <button data-tab-btn="orders" onclick="ownerTab('orders')"
-        class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition">
+        class="px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition" data-i18n="tab_orders">
         🧾 Orders
       </button>
     </div>
@@ -77,41 +170,56 @@
     <div class="grid md:grid-cols-2 gap-6">
       <!-- Basic info card -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <h3 class="font-semibold text-slate-800 mb-4">Shop Info</h3>
+        <h3 class="font-semibold text-slate-800 mb-4" data-i18n="shop_info">Shop Info</h3>
         <div class="space-y-3">
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Shop Name</label>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="shop_name_label">Shop Name</label>
             <input id="sf-name" type="text" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
           </div>
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Description</label>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="description">Description</label>
             <textarea id="sf-desc" rows="2" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none"></textarea>
           </div>
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Address</label>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="address">Address</label>
             <input id="sf-address" type="text" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
           </div>
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Phone</label>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="phone">Phone</label>
             <input id="sf-phone" type="text" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
           </div>
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Categories (comma-separated)</label>
-            <input id="sf-categories" type="text" placeholder="Coffee, Food, Drinks…" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="categories_label">Categories (comma-separated)</label>
+            <input id="sf-categories" type="text" placeholder="Coffee, Food, Drinks…" data-i18n-ph="categories_ph" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
           </div>
         </div>
       </div>
 
       <!-- Opening times card -->
       <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-        <h3 class="font-semibold text-slate-800 mb-4">Opening Times</h3>
+        <h3 class="font-semibold text-slate-800 mb-4" data-i18n="opening_times">Opening Times</h3>
         <div id="sf-opening-times" class="space-y-1"></div>
+      </div>
+    </div>
+
+    <!-- Language card -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm mt-6">
+      <h3 class="font-semibold text-slate-800 mb-4" data-i18n="language_title">Language</h3>
+      <div class="flex gap-3">
+        <button id="lang-btn-en" onclick="setLang('en')"
+          class="px-4 py-2 rounded-lg border-2 text-sm font-semibold transition border-indigo-600 text-indigo-600 bg-indigo-50">
+          🇬🇧 English
+        </button>
+        <button id="lang-btn-fr" onclick="setLang('fr')"
+          class="px-4 py-2 rounded-lg border-2 text-sm font-semibold transition border-slate-200 text-slate-600 hover:border-slate-400">
+          🇫🇷 Français
+        </button>
       </div>
     </div>
 
     <div class="mt-5 flex items-center gap-3">
       <button onclick="saveSettings()"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition">
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition" data-i18n="save_changes">
         Save Changes
       </button>
     </div>
@@ -123,15 +231,15 @@
     <div class="grid grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
         <div id="stat-total" class="text-2xl font-bold text-indigo-600">0</div>
-        <div class="text-xs text-slate-500 mt-0.5">Total</div>
+        <div class="text-xs text-slate-500 mt-0.5" data-i18n="stat_total">Total</div>
       </div>
       <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
         <div id="stat-available" class="text-2xl font-bold text-emerald-600">0</div>
-        <div class="text-xs text-slate-500 mt-0.5">Available</div>
+        <div class="text-xs text-slate-500 mt-0.5" data-i18n="stat_available">Available</div>
       </div>
       <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
         <div id="stat-cats" class="text-2xl font-bold text-orange-500">0</div>
-        <div class="text-xs text-slate-500 mt-0.5">Categories</div>
+        <div class="text-xs text-slate-500 mt-0.5" data-i18n="stat_categories">Categories</div>
       </div>
     </div>
 
@@ -139,7 +247,7 @@
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
       <div id="category-filters" class="flex flex-wrap gap-2"></div>
       <button onclick="openProductModal()"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap">
+        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap" data-i18n="add_product">
         + Add Product
       </button>
     </div>
@@ -154,15 +262,15 @@
     <div class="grid grid-cols-3 gap-4 mb-6">
       <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
         <div id="ostat-total" class="text-2xl font-bold text-indigo-600">0</div>
-        <div class="text-xs text-slate-500 mt-0.5">Total Orders</div>
+        <div class="text-xs text-slate-500 mt-0.5" data-i18n="stat_total_orders">Total Orders</div>
       </div>
       <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
         <div id="ostat-active" class="text-2xl font-bold text-amber-500">0</div>
-        <div class="text-xs text-slate-500 mt-0.5">Active</div>
+        <div class="text-xs text-slate-500 mt-0.5" data-i18n="stat_active">Active</div>
       </div>
       <div class="bg-white rounded-2xl border border-slate-200 p-4 text-center shadow-sm">
         <div id="ostat-revenue" class="text-2xl font-bold text-emerald-600">€0</div>
-        <div class="text-xs text-slate-500 mt-0.5">Revenue</div>
+        <div class="text-xs text-slate-500 mt-0.5" data-i18n="stat_revenue">Revenue</div>
       </div>
     </div>
 
@@ -180,15 +288,15 @@
     <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <span class="text-xl">👨‍🍳</span>
-        <span class="font-bold text-slate-800">Kitchen</span>
+        <span class="font-bold text-slate-800" data-i18n="role_kitchen">Kitchen</span>
         <span class="text-slate-300 hidden sm:block">|</span>
         <span id="kitchen-shop-name" class="text-slate-500 text-sm hidden sm:block"></span>
       </div>
       <div class="flex items-center gap-3">
         <span id="kitchen-conn" class="flex items-center gap-1.5 text-xs text-slate-400">
-          <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="kitchen-dot"></span>Live
+          <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="kitchen-dot"></span><span data-i18n="live">Live</span>
         </span>
-        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition">Logout</button>
+        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition" data-i18n="logout">Logout</button>
       </div>
     </div>
   </nav>
@@ -196,15 +304,15 @@
   <div class="flex-1 max-w-5xl mx-auto w-full px-4 py-6">
     <div id="kitchen-empty" class="text-center py-20 text-slate-400">
       <div class="text-6xl mb-4">🍳</div>
-      <p class="text-lg font-medium text-slate-500">Kitchen is clear</p>
-      <p class="text-sm mt-1">Waiting for new orders…</p>
+      <p class="text-lg font-medium text-slate-500" data-i18n="kitchen_clear">Kitchen is clear</p>
+      <p class="text-sm mt-1" data-i18n="waiting_orders">Waiting for new orders…</p>
     </div>
     <div id="kitchen-board" class="hidden">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <div class="flex items-center gap-2 mb-3">
             <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
-            <h3 class="font-bold text-slate-700">New Orders</h3>
+            <h3 class="font-bold text-slate-700" data-i18n="new_orders_section">New Orders</h3>
             <span id="k-pending-count" class="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
           </div>
           <div id="k-pending" class="space-y-3"></div>
@@ -212,7 +320,7 @@
         <div>
           <div class="flex items-center gap-2 mb-3">
             <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
-            <h3 class="font-bold text-slate-700">In Progress</h3>
+            <h3 class="font-bold text-slate-700" data-i18n="in_progress">In Progress</h3>
             <span id="k-preparing-count" class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
           </div>
           <div id="k-preparing" class="space-y-3"></div>
@@ -228,18 +336,18 @@
     <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <span class="text-xl">🛎️</span>
-        <span class="font-bold text-slate-800">Waiter</span>
+        <span class="font-bold text-slate-800" data-i18n="role_waiter">Waiter</span>
         <span class="text-slate-300 hidden sm:block">|</span>
         <span id="waiter-shop-name" class="text-slate-500 text-sm hidden sm:block"></span>
       </div>
       <div class="flex items-center gap-3">
         <span class="flex items-center gap-1.5 text-xs text-slate-400">
-          <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="waiter-dot"></span>Live
+          <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="waiter-dot"></span><span data-i18n="live">Live</span>
         </span>
         <button id="waiter-vibrate-btn" onclick="toggleWaiterVibrate()"
-          class="text-base px-1 opacity-30 hover:opacity-70 transition" title="Tap to enable vibration alerts">📳</button>
-        <button onclick="openWaiterOrder()" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition font-medium">+ New Order</button>
-        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition">Logout</button>
+          class="text-base px-1 opacity-30 hover:opacity-70 transition" data-i18n-title="vibrate_enable" title="Tap to enable vibration alerts">📳</button>
+        <button onclick="openWaiterOrder()" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition font-medium" data-i18n="new_order_btn">+ New Order</button>
+        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition" data-i18n="logout">Logout</button>
       </div>
     </div>
   </nav>
@@ -248,13 +356,13 @@
     <div class="mb-8">
       <div class="flex items-center gap-2 mb-3">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-        <h3 class="font-bold text-slate-700">Ready for Pickup</h3>
+        <h3 class="font-bold text-slate-700" data-i18n="ready_pickup">Ready for Pickup</h3>
         <span id="w-ready-count" class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
       </div>
       <div id="w-ready"></div>
     </div>
     <div>
-      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Recent Deliveries</h4>
+      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3" data-i18n="recent_deliveries">Recent Deliveries</h4>
       <div id="w-delivered" class="space-y-2"></div>
     </div>
   </div>
@@ -266,15 +374,15 @@
     <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <span class="text-xl">💳</span>
-        <span class="font-bold text-slate-800">Cashier</span>
+        <span class="font-bold text-slate-800" data-i18n="role_cashier">Cashier</span>
         <span class="text-slate-300 hidden sm:block">|</span>
         <span id="cashier-shop-name" class="text-slate-500 text-sm hidden sm:block"></span>
       </div>
       <div class="flex items-center gap-3">
         <span class="flex items-center gap-1.5 text-xs text-slate-400">
-          <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="cashier-dot"></span>Live
+          <span class="w-2 h-2 rounded-full bg-slate-300 inline-block" id="cashier-dot"></span><span data-i18n="live">Live</span>
         </span>
-        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition">Logout</button>
+        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition" data-i18n="logout">Logout</button>
       </div>
     </div>
   </nav>
@@ -283,13 +391,13 @@
     <div class="mb-8">
       <div class="flex items-center gap-2 mb-3">
         <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
-        <h3 class="font-bold text-slate-700">Open Bills</h3>
+        <h3 class="font-bold text-slate-700" data-i18n="open_bills">Open Bills</h3>
         <span id="cashier-open-count" class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
       </div>
       <div id="cashier-open-list"></div>
     </div>
     <div>
-      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Recent Payments</h4>
+      <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3" data-i18n="recent_payments">Recent Payments</h4>
       <div id="cashier-paid-list" class="space-y-2"></div>
     </div>
   </div>
@@ -299,18 +407,30 @@
 <div id="waiter-order-modal" class="modal-bg fixed inset-0 bg-black/40 z-50 items-center justify-center p-4">
   <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[85vh]">
     <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
-      <h3 class="font-semibold text-slate-900 text-lg">New Order</h3>
+      <h3 class="font-semibold text-slate-900 text-lg" data-i18n="new_order_title">New Order</h3>
       <button onclick="closeWaiterOrder()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">&times;</button>
     </div>
     <div id="waiter-order-products" class="flex-1 overflow-y-auto px-4 py-4"></div>
     <div class="shrink-0 border-t border-slate-100 px-6 py-4 space-y-3">
       <div id="waiter-order-cart-summary" class="hidden text-sm text-slate-700 bg-slate-50 rounded-xl px-4 py-3"></div>
-      <input id="waiter-order-name" type="text" placeholder="Customer / table name *"
-        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-      <input id="waiter-order-note" type="text" placeholder="Note (optional)"
+      <select id="waiter-order-name"
+        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white">
+        <option value="">Table number *</option>
+        <option value="Table 1">Table 1</option>
+        <option value="Table 2">Table 2</option>
+        <option value="Table 3">Table 3</option>
+        <option value="Table 4">Table 4</option>
+        <option value="Table 5">Table 5</option>
+        <option value="Table 6">Table 6</option>
+        <option value="Table 7">Table 7</option>
+        <option value="Table 8">Table 8</option>
+        <option value="Table 9">Table 9</option>
+        <option value="Table 10">Table 10</option>
+      </select>
+      <input id="waiter-order-note" type="text" placeholder="Note (optional)" data-i18n-ph="note_optional"
         class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
       <button onclick="placeWaiterOrder()" id="waiter-order-btn"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-semibold text-sm transition">
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-semibold text-sm transition" data-i18n="place_order">
         Place Order
       </button>
     </div>
@@ -325,14 +445,14 @@
     <div class="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
       <div class="flex items-center gap-1">
         <button id="cust-back" onclick="custBack()"
-          class="hidden text-sm text-slate-500 hover:text-indigo-600 font-medium px-2 py-1 rounded-lg hover:bg-slate-100 transition">
+          class="hidden text-sm text-slate-500 hover:text-indigo-600 font-medium px-2 py-1 rounded-lg hover:bg-slate-100 transition" data-i18n="back_btn">
           ← Back
         </button>
         <span class="font-bold text-indigo-600 text-lg">🛒 ShopFlow</span>
       </div>
       <div class="flex items-center gap-2">
         <span id="cust-username" class="text-sm text-slate-500 hidden sm:block"></span>
-        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition">
+        <button onclick="logout()" class="text-sm border border-slate-200 hover:border-red-300 hover:text-red-500 px-3 py-1.5 rounded-lg transition" data-i18n="logout">
           Logout
         </button>
       </div>
@@ -342,7 +462,7 @@
   <!-- ── Shops ── -->
   <div data-cview="shops" class="show max-w-2xl mx-auto w-full px-4 py-6">
     <div id="open-orders-section" class="hidden mb-6"></div>
-    <h2 class="text-lg font-bold text-slate-800 mb-4">Find a Shop</h2>
+    <h2 class="text-lg font-bold text-slate-800 mb-4" data-i18n="find_shop">Find a Shop</h2>
     <div id="shops-list"></div>
   </div>
 
@@ -360,7 +480,7 @@
           <span class="font-bold" id="cart-bar-total">€0.00</span>
         </div>
         <button onclick="custGo('cart')"
-          class="bg-white text-indigo-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-indigo-50 transition">
+          class="bg-white text-indigo-700 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-indigo-50 transition" data-i18n="view_order">
           View Order →
         </button>
       </div>
@@ -369,26 +489,26 @@
 
   <!-- ── Cart / Checkout ── -->
   <div data-cview="cart" class="max-w-2xl mx-auto w-full px-4 py-4">
-    <h2 class="text-lg font-bold text-slate-800 mb-4">Your Order</h2>
+    <h2 class="text-lg font-bold text-slate-800 mb-4" data-i18n="your_order">Your Order</h2>
     <div id="cart-items"></div>
     <div class="flex justify-between items-center font-bold text-base border-t border-slate-200 pt-3 mb-5">
-      <span>Total</span>
+      <span data-i18n="total_label">Total</span>
       <span id="cart-total-display">€0.00</span>
     </div>
     <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3 mb-5">
       <div>
-        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Your Name *</label>
+        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="your_name">Your Name *</label>
         <input id="checkout-name" type="text"
           class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
       </div>
       <div>
-        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Note (optional)</label>
-        <input id="checkout-note" type="text" placeholder="e.g. no sugar, extra hot…"
+        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="note_optional">Note (optional)</label>
+        <input id="checkout-note" type="text" placeholder="e.g. no sugar, extra hot…" data-i18n-ph="note_ph"
           class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
       </div>
     </div>
     <button id="place-order-btn" onclick="placeOrder()"
-      class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-base transition">
+      class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-bold text-base transition" data-i18n="place_order">
       Place Order
     </button>
   </div>
@@ -409,40 +529,40 @@
     </div>
     <form id="product-form" onsubmit="submitProductForm(event)" class="px-6 py-4 space-y-4">
       <div>
-        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Name *</label>
+        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="name_required">Name *</label>
         <input id="pf-name" type="text" required
           class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Category *</label>
+          <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="category_required">Category *</label>
           <input id="pf-category" list="category-list" required
             class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
           <datalist id="category-list"></datalist>
         </div>
         <div>
-          <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Price (€) *</label>
+          <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="price_required">Price (€) *</label>
           <input id="pf-price" type="number" min="0" step="0.10" required
             class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
         </div>
       </div>
       <div>
-        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Description</label>
+        <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="description">Description</label>
         <input id="pf-desc" type="text"
           class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
       </div>
       <div class="flex items-center gap-3">
         <input id="pf-available" type="checkbox" checked class="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-400">
-        <label for="pf-available" class="text-sm text-slate-700">Available for ordering</label>
+        <label for="pf-available" class="text-sm text-slate-700" data-i18n="available_for_ordering">Available for ordering</label>
       </div>
       <div class="flex gap-3 pt-2">
         <button type="button" onclick="closeProductModal()"
           class="flex-1 border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2.5 rounded-lg text-sm font-medium transition">
-          Cancel
+          <span data-i18n="cancel">Cancel</span>
         </button>
         <button type="submit"
           class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition">
-          Save Product
+          <span data-i18n="save_product">Save Product</span>
         </button>
       </div>
     </form>
@@ -453,6 +573,191 @@
 <div id="toast" class="fixed bottom-5 right-5 z-50 px-4 py-3 rounded-xl text-sm font-medium shadow-lg transition-all duration-300 opacity-0 pointer-events-none"></div>
 
 <script>
+// ═════════════════════════════════════════════════════════════════════════════
+// i18n
+// ═════════════════════════════════════════════════════════════════════════════
+const TRANSLATIONS = {
+  en: {
+    welcome_back:'Welcome back', select_role:'Select your role to continue',
+    demo_hint:'Demo app — click any card to log in instantly', logout:'Logout',
+    role_owner:'Shop Owner', role_kitchen:'Kitchen', role_waiter:'Waiter',
+    role_cashier:'Cashier', role_customer:'Customer',
+    tab_settings:'⚙️ Shop Settings', tab_products:'📦 Products', tab_orders:'🧾 Orders',
+    shop_info:'Shop Info', shop_name_label:'Shop Name', description:'Description',
+    address:'Address', phone:'Phone',
+    categories_label:'Categories (comma-separated)', categories_ph:'Coffee, Food, Drinks…',
+    opening_times:'Opening Times', language_title:'Language',
+    save_changes:'Save Changes', settings_saved:'Settings saved ✓', closed:'Closed',
+    day_mon:'Mon', day_tue:'Tue', day_wed:'Wed', day_thu:'Thu',
+    day_fri:'Fri', day_sat:'Sat', day_sun:'Sun',
+    stat_total:'Total', stat_available:'Available', stat_categories:'Categories',
+    add_product:'+ Add Product',
+    no_products:'No products yet — add your first one!', no_products_in:'No products in',
+    unavailable:'Unavailable', edit:'Edit', delete_btn:'Delete',
+    product_updated:'Product updated ✓', product_added:'Product added ✓', product_deleted:'Product deleted',
+    filter_all:'All', filter_open:'Open', filter_paid:'Paid', filter_cancelled:'Cancelled',
+    add_product_title:'Add Product', edit_product_title:'Edit Product',
+    name_required:'Name *', category_required:'Category *', price_required:'Price (€) *',
+    available_for_ordering:'Available for ordering', cancel:'Cancel', save_product:'Save Product',
+    stat_total_orders:'Total Orders', stat_active:'Active', stat_revenue:'Revenue',
+    no_orders:'No orders yet.', no_orders_filter:'No orders match this filter.',
+    total_colon:'Total: €',
+    status_open:'🟡 Open', status_pending:'⏳ Pending', status_preparing:'🍳 Preparing',
+    status_ready:'✅ Ready', status_delivered:'🚚 Delivered',
+    status_paid:'💳 Paid', status_cancelled:'✕ Cancelled',
+    kitchen_clear:'Kitchen is clear', waiting_orders:'Waiting for new orders…',
+    new_orders_section:'New Orders', in_progress:'In Progress',
+    no_new_orders:'No new orders', nothing_in_progress:'Nothing in progress',
+    start_btn:'Start →', ready_btn:'✓ Ready', live:'Live',
+    ready_pickup:'Ready for Pickup', new_order_btn:'+ New Order',
+    recent_deliveries:'Recent Deliveries', deliver_btn:'🚚 Deliver',
+    waiting_ready:'Waiting for items to be ready…', no_closed_bills:'No closed bills yet',
+    vibrate_enable:'Tap to enable vibration alerts', vibrate_disable:'Vibration on — tap to disable',
+    preparing_label:'preparing…', bill_closed:'Bill closed ✓',
+    new_order_title:'New Order', table_number:'Table number *', table_prefix:'Table',
+    note_optional:'Note (optional)', place_order:'Place Order', placing:'Placing…',
+    please_select_table:'Please select a table', add_item:'Add at least one item',
+    no_products_avail:'No products available.', loading:'Loading…',
+    order_placed_for:'Order placed for', items_count:'item(s)',
+    open_bills:'Open Bills', recent_payments:'Recent Payments',
+    no_open_bills:'No open bills', no_payments_yet:'No payments yet',
+    close_bill:'💳 Close Bill',
+    find_shop:'Find a Shop', your_active_orders:'Your Active Orders', no_shops:'No shops found.',
+    open_status:'● Open · ', closed_today:'○ Closed today',
+    view_order:'View Order →', your_order:'Your Order', total_label:'Total',
+    your_name:'Your Name *', note_ph:'e.g. no sugar, extra hot…',
+    cart_empty:'Your cart is empty.', browse_menu:'Browse menu',
+    please_enter_name:'Please enter your name', order_placed_ok:'Order placed ✓',
+    back_btn:'← Back', new_order_link:'New Order',
+    checking_updates:'Checking for updates every 3 s…', placing_order:'Placing order…',
+    each_label:'each', shop_fallback:'Shop',
+    just_now:'just now', s_ago:'s ago', m_ago:'m ago', h_ago:'h ago',
+    landing_badge:'Full-stack restaurant management',
+    landing_h1_1:'Run your restaurant', landing_h1_2:'smarter, faster',
+    landing_subtitle:'One app for your entire team — from kitchen to cashier. Real-time updates, works on any device.',
+    landing_cta:"Try the Demo — it's free", landing_launch_nav:'Launch Demo', landing_float_btn:'Launch App',
+    landing_features_title:'Everything your team needs',
+    feat_owner_title:'Owner Dashboard', feat_owner_desc:'Manage products, track live orders and revenue in real time, set your opening hours.',
+    feat_kitchen_title:'Kitchen Display', feat_kitchen_desc:'Live ticket board with item-level status. Start and mark items ready as you cook.',
+    feat_waiter_title:'Waiter Service', feat_waiter_desc:'Get alerted when items are ready. Place new orders and deliver with one tap — vibration alerts included.',
+    feat_cashier_title:'Cashier', feat_cashier_desc:'See all open bills at a glance. Close them with a single tap and track payment history.',
+    feat_customer_title:'Customer Ordering', feat_customer_desc:'Browse the menu, build a cart, and track your order in real time — no app download needed.',
+    feat_realtime_title:'Real-time Sync', feat_realtime_desc:'All roles update instantly via live server events. No polling, no page refreshes — ever.',
+  },
+  fr: {
+    welcome_back:'Bon retour', select_role:'Sélectionnez votre rôle pour continuer',
+    demo_hint:'Application démo — cliquez sur une carte pour vous connecter', logout:'Déconnexion',
+    role_owner:'Propriétaire', role_kitchen:'Cuisine', role_waiter:'Serveur',
+    role_cashier:'Caissier', role_customer:'Client',
+    tab_settings:'⚙️ Paramètres', tab_products:'📦 Produits', tab_orders:'🧾 Commandes',
+    shop_info:'Infos boutique', shop_name_label:'Nom de la boutique', description:'Description',
+    address:'Adresse', phone:'Téléphone',
+    categories_label:'Catégories (séparées par virgule)', categories_ph:'Café, Nourriture, Boissons…',
+    opening_times:"Horaires d'ouverture", language_title:'Langue',
+    save_changes:'Enregistrer', settings_saved:'Paramètres enregistrés ✓', closed:'Fermé',
+    day_mon:'Lun', day_tue:'Mar', day_wed:'Mer', day_thu:'Jeu',
+    day_fri:'Ven', day_sat:'Sam', day_sun:'Dim',
+    stat_total:'Total', stat_available:'Disponibles', stat_categories:'Catégories',
+    add_product:'+ Ajouter un produit',
+    no_products:'Aucun produit — ajoutez le premier !', no_products_in:'Aucun produit dans',
+    unavailable:'Indisponible', edit:'Modifier', delete_btn:'Supprimer',
+    product_updated:'Produit mis à jour ✓', product_added:'Produit ajouté ✓', product_deleted:'Produit supprimé',
+    filter_all:'Tous', filter_open:'Ouvertes', filter_paid:'Payées', filter_cancelled:'Annulées',
+    add_product_title:'Ajouter un produit', edit_product_title:'Modifier le produit',
+    name_required:'Nom *', category_required:'Catégorie *', price_required:'Prix (€) *',
+    available_for_ordering:'Disponible à la commande', cancel:'Annuler', save_product:'Enregistrer',
+    stat_total_orders:'Total commandes', stat_active:'Actives', stat_revenue:"Chiffre d'affaires",
+    no_orders:'Aucune commande.', no_orders_filter:'Aucune commande ne correspond.',
+    total_colon:'Total : €',
+    status_open:'🟡 Ouvert', status_pending:'⏳ En attente', status_preparing:'🍳 En préparation',
+    status_ready:'✅ Prêt', status_delivered:'🚚 Livré',
+    status_paid:'💳 Payé', status_cancelled:'✕ Annulé',
+    kitchen_clear:'Cuisine libre', waiting_orders:'En attente de nouvelles commandes…',
+    new_orders_section:'Nouvelles commandes', in_progress:'En cours',
+    no_new_orders:'Aucune nouvelle commande', nothing_in_progress:'Rien en cours',
+    start_btn:'Démarrer →', ready_btn:'✓ Prêt', live:'En direct',
+    ready_pickup:'Prêt à servir', new_order_btn:'+ Nouvelle commande',
+    recent_deliveries:'Livraisons récentes', deliver_btn:'🚚 Livrer',
+    waiting_ready:'En attente des plats prêts…', no_closed_bills:'Aucune addition fermée',
+    vibrate_enable:'Activer les alertes vibration', vibrate_disable:'Vibration activée — désactiver',
+    preparing_label:'en préparation…', bill_closed:'Addition fermée ✓',
+    new_order_title:'Nouvelle commande', table_number:'Numéro de table *', table_prefix:'Table',
+    note_optional:'Note (optionnelle)', place_order:'Passer la commande', placing:'En cours…',
+    please_select_table:'Veuillez sélectionner une table', add_item:'Ajoutez au moins un article',
+    no_products_avail:'Aucun produit disponible.', loading:'Chargement…',
+    order_placed_for:'Commande passée pour', items_count:'article(s)',
+    open_bills:'Additions ouvertes', recent_payments:'Paiements récents',
+    no_open_bills:'Aucune addition ouverte', no_payments_yet:'Aucun paiement',
+    close_bill:"💳 Fermer l'addition",
+    find_shop:'Trouver une boutique', your_active_orders:'Vos commandes actives', no_shops:'Aucune boutique trouvée.',
+    open_status:'● Ouvert · ', closed_today:"○ Fermé aujourd'hui",
+    view_order:'Voir la commande →', your_order:'Votre commande', total_label:'Total',
+    your_name:'Votre nom *', note_ph:'ex. sans sucre, bien chaud…',
+    cart_empty:'Votre panier est vide.', browse_menu:'Voir le menu',
+    please_enter_name:'Veuillez entrer votre nom', order_placed_ok:'Commande passée ✓',
+    back_btn:'← Retour', new_order_link:'Nouvelle commande',
+    checking_updates:'Vérification toutes les 3 s…', placing_order:'Commande en cours…',
+    each_label:'pièce', shop_fallback:'Boutique',
+    just_now:"à l'instant", s_ago:'s', m_ago:' min', h_ago:'h',
+    landing_badge:'Gestion complète de restaurant',
+    landing_h1_1:'Gérez votre restaurant', landing_h1_2:'mieux, plus vite',
+    landing_subtitle:"Une seule app pour toute votre équipe — de la cuisine à la caisse. Mises à jour en temps réel, sur tous les appareils.",
+    landing_cta:'Essayer la démo — gratuit', landing_launch_nav:'Lancer la démo', landing_float_btn:"Lancer l'app",
+    landing_features_title:'Tout ce dont votre équipe a besoin',
+    feat_owner_title:'Tableau de bord', feat_owner_desc:'Gérez les produits, suivez commandes et revenus en direct, définissez vos horaires.',
+    feat_kitchen_title:'Affichage cuisine', feat_kitchen_desc:"Tableau de tickets en temps réel par article. Démarrez et marquez les plats prêts au fur et à mesure.",
+    feat_waiter_title:'Service serveur', feat_waiter_desc:"Alerté quand les plats sont prêts. Prenez de nouvelles commandes et livrez en un tap — alertes vibration incluses.",
+    feat_cashier_title:'Caissier', feat_cashier_desc:"Toutes les additions ouvertes d'un coup d'œil. Fermez-les en un tap et suivez l'historique des paiements.",
+    feat_customer_title:'Commande client', feat_customer_desc:"Parcourez le menu, composez un panier et suivez votre commande en temps réel — sans télécharger d'app.",
+    feat_realtime_title:'Synchronisation temps réel', feat_realtime_desc:"Tous les rôles se mettent à jour instantanément via des événements serveur. Aucun polling, jamais.",
+  }
+};
+
+let lang = localStorage.getItem('sf_lang') || 'en';
+
+function t(key) {
+  return (TRANSLATIONS[lang] || TRANSLATIONS.en)[key] ?? key;
+}
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('sf_lang', l);
+  document.documentElement.lang = l;
+  applyLang();
+  reRenderAll();
+}
+
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  const sel = $('waiter-order-name');
+  if (sel) {
+    sel.options[0].text = t('table_number');
+    for (let i = 1; i <= 10; i++) sel.options[i].text = t('table_prefix') + ' ' + i;
+  }
+  const lbEn = $('lang-btn-en'), lbFr = $('lang-btn-fr');
+  if (lbEn) { lbEn.className = `px-4 py-2 rounded-lg border-2 text-sm font-semibold transition ${lang==='en' ? 'border-indigo-600 text-indigo-600 bg-indigo-50' : 'border-slate-200 text-slate-600 hover:border-slate-400'}`; }
+  if (lbFr) { lbFr.className = `px-4 py-2 rounded-lg border-2 text-sm font-semibold transition ${lang==='fr' ? 'border-indigo-600 text-indigo-600 bg-indigo-50' : 'border-slate-200 text-slate-600 hover:border-slate-400'}`; }
+}
+
+function reRenderAll() {
+  const role = currentUser?.role;
+  if (!role) { renderLoginCards(); return; }
+  if (role === 'owner')    { renderSettings(); renderProducts(); if (document.querySelector('[data-tab-pane="orders"].show')) renderOwnerOrders(); }
+  if (role === 'kitchen')  renderKitchen();
+  if (role === 'waiter')   { renderWaiter(); renderWaiterOrderProducts(); }
+  if (role === 'cashier')  renderCashier();
+  if (role === 'customer') {
+    renderShopsList(custShops);
+    renderOpenOrders(custOpenOrders);
+    const cv = document.querySelector('[data-cview].show')?.dataset.cview;
+    if (cv === 'cart') renderCart();
+    if (cv === 'menu') renderMenu();
+    if (cv === 'order' && custOrder) renderOrderCard(custOrder);
+  }
+}
+
 // ═════════════════════════════════════════════════════════════════════════════
 // State
 // ═════════════════════════════════════════════════════════════════════════════
@@ -505,11 +810,11 @@ function showView(name) {
 // Login
 // ═════════════════════════════════════════════════════════════════════════════
 const ROLE_META = {
-  owner:    { emoji: '👨‍💼', label: 'Shop Owner',  color: 'border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50'  },
-  kitchen:  { emoji: '👨‍🍳', label: 'Kitchen',     color: 'border-orange-200 hover:border-orange-400 hover:bg-orange-50'  },
-  waiter:   { emoji: '🛎️',  label: 'Waiter',      color: 'border-teal-200   hover:border-teal-400   hover:bg-teal-50'    },
-  cashier:  { emoji: '💳',  label: 'Cashier',     color: 'border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50' },
-  customer: { emoji: '👤',  label: 'Customer',    color: 'border-sky-200    hover:border-sky-400    hover:bg-sky-50'     },
+  owner:    { emoji: '👨‍💼', role: 'owner',    color: 'border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50'  },
+  kitchen:  { emoji: '👨‍🍳', role: 'kitchen',  color: 'border-orange-200 hover:border-orange-400 hover:bg-orange-50'  },
+  waiter:   { emoji: '🛎️',  role: 'waiter',   color: 'border-teal-200   hover:border-teal-400   hover:bg-teal-50'    },
+  cashier:  { emoji: '💳',  role: 'cashier',  color: 'border-emerald-200 hover:border-emerald-400 hover:bg-emerald-50' },
+  customer: { emoji: '👤',  role: 'customer', color: 'border-sky-200    hover:border-sky-400    hover:bg-sky-50'     },
 };
 
 async function renderLoginCards() {
@@ -521,7 +826,7 @@ async function renderLoginCards() {
         class="p-5 bg-white rounded-2xl border-2 ${m.color} transition-all text-left group">
         <div class="text-4xl mb-3">${m.emoji}</div>
         <div class="font-bold text-slate-900 text-base">${esc(u.name)}</div>
-        <div class="text-sm text-slate-500 mt-0.5">${m.label}</div>
+        <div class="text-sm text-slate-500 mt-0.5">${t('role_' + u.role)}</div>
       </button>`;
   }).join('');
 }
@@ -541,6 +846,10 @@ function logout() {
   currentUser = null;
   localStorage.removeItem('sf_user');
   location.reload();
+}
+
+function goToApp() {
+  showView('login');
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -591,7 +900,7 @@ function renderSettings() {
   $('sf-categories').value = currentShop.categories.join(', ');
 
   const DAYS = ['mon','tue','wed','thu','fri','sat','sun'];
-  const DAY_LABEL = { mon:'Mon',tue:'Tue',wed:'Wed',thu:'Thu',fri:'Fri',sat:'Sat',sun:'Sun' };
+  const DAY_LABEL = { mon:t('day_mon'),tue:t('day_tue'),wed:t('day_wed'),thu:t('day_thu'),fri:t('day_fri'),sat:t('day_sat'),sun:t('day_sun') };
   $('sf-opening-times').innerHTML = DAYS.map(d => {
     const val = currentShop.openingTimes?.[d] || '';
     const open = val !== 'closed' && val !== '';
@@ -602,7 +911,7 @@ function renderSettings() {
           class="h-4 w-4 rounded accent-indigo-600">
         <input id="ot-${d}-val" type="text" value="${open ? esc(val) : ''}" placeholder="08:00-18:00"
           class="flex-1 text-sm border border-slate-200 rounded-md px-2 py-1 max-w-[150px] focus:outline-none focus:ring-1 focus:ring-indigo-400 ${!open ? 'opacity-30 pointer-events-none' : ''}">
-        <span id="ot-${d}-lbl" class="text-xs text-slate-400 ${open ? 'hidden' : ''}">Closed</span>
+        <span id="ot-${d}-lbl" class="text-xs text-slate-400 ${open ? 'hidden' : ''}">${t('closed')}</span>
       </div>`;
   }).join('');
 }
@@ -633,7 +942,7 @@ async function saveSettings() {
     });
     $('owner-shop-name').textContent = currentShop.name;
     refreshCategoryList();
-    toast('Settings saved ✓');
+    toast(t('settings_saved'));
   } catch (e) { toast(e.message, 'err'); }
 }
 
@@ -650,7 +959,7 @@ function renderProducts() {
   $('stat-cats').textContent      = [...new Set(products.map(p => p.category))].length;
 
   // Filter chips
-  const cats = ['All', ...currentShop.categories];
+  const cats = [t('filter_all'), ...currentShop.categories];
   $('category-filters').innerHTML = cats.map(c => `
     <button onclick="setFilter('${esc(c)}')"
       class="px-3 py-1.5 rounded-full text-sm font-medium transition ${
@@ -662,13 +971,13 @@ function renderProducts() {
     </button>`).join('');
 
   // Filtered & grouped
-  const filtered = activeFilter === 'All' ? products : products.filter(p => p.category === activeFilter);
+  const filtered = activeFilter === t('filter_all') ? products : products.filter(p => p.category === activeFilter);
 
   if (!filtered.length) {
     $('product-list').innerHTML = `
       <div class="text-center py-16 text-slate-400">
         <div class="text-5xl mb-3">📦</div>
-        <p>${activeFilter === 'All' ? 'No products yet — add your first one!' : `No products in "${esc(activeFilter)}"`}</p>
+        <p>${activeFilter === t('filter_all') ? t('no_products') : `${t('no_products_in')} "${esc(activeFilter)}"`}</p>
       </div>`;
     return;
   }
@@ -685,7 +994,7 @@ function renderProducts() {
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="font-medium text-slate-900">${esc(p.name)}</span>
-                ${!p.available ? `<span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">Unavailable</span>` : ''}
+                ${!p.available ? `<span class="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">${t('unavailable')}</span>` : ''}
               </div>
               ${p.description ? `<div class="text-sm text-slate-400 truncate mt-0.5">${esc(p.description)}</div>` : ''}
             </div>
@@ -693,11 +1002,11 @@ function renderProducts() {
             <div class="flex gap-1.5">
               <button onclick="openProductModal('${p.id}')"
                 class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-100 hover:text-indigo-700 transition font-medium">
-                Edit
+                ${t('edit')}
               </button>
               <button onclick="deleteProduct('${p.id}', '${esc(p.name)}')"
                 class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-red-100 hover:text-red-600 transition font-medium">
-                Delete
+                ${t('delete_btn')}
               </button>
             </div>
           </div>`).join('')}
@@ -728,7 +1037,7 @@ function setOwnerOrderFilter(status) {
 
 function renderOwnerOrders() {
   const ALL_STATUSES = ['all', 'open', 'paid', 'cancelled'];
-  const STATUS_FILTER_LABEL = { all: 'All', open: 'Open', paid: 'Paid', cancelled: 'Cancelled' };
+  const STATUS_FILTER_LABEL = { all: t('filter_all'), open: t('filter_open'), paid: t('filter_paid'), cancelled: t('filter_cancelled') };
 
   // Stats
   const paid    = ownerOrders.filter(o => o.status === 'paid');
@@ -755,7 +1064,7 @@ function renderOwnerOrders() {
     $('owner-order-list').innerHTML = `
       <div class="text-center py-16 text-slate-400">
         <div class="text-5xl mb-3">🧾</div>
-        <p>${ownerOrders.length === 0 ? 'No orders yet.' : 'No orders match this filter.'}</p>
+        <p>${ownerOrders.length === 0 ? t('no_orders') : t('no_orders_filter')}</p>
       </div>`;
     return;
   }
@@ -771,7 +1080,7 @@ function renderOwnerOrders() {
         </div>
         <div class="flex items-center gap-3">
           <span class="text-xs text-slate-400">${timeAgo(o.createdAt)}</span>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLOR[o.status] || ''}">${STATUS_LABEL[o.status] || o.status}</span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLOR[o.status] || ''}">${STATUS_LABEL(o.status) || o.status}</span>
         </div>
       </div>
       <div class="px-4 py-3">
@@ -779,14 +1088,14 @@ function renderOwnerOrders() {
           ${o.items.map(i => `
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-2 flex-1 min-w-0">
-                <span class="px-1.5 py-0.5 rounded text-xs font-semibold ${STATUS_COLOR[i.status] || 'bg-slate-100 text-slate-500'}">${STATUS_LABEL[i.status] || i.status}</span>
+                <span class="px-1.5 py-0.5 rounded text-xs font-semibold ${STATUS_COLOR[i.status] || 'bg-slate-100 text-slate-500'}">${STATUS_LABEL(i.status) || i.status}</span>
                 <span class="text-slate-700 truncate">${esc(i.name)} × ${i.qty}</span>
               </div>
               <span class="text-slate-500 shrink-0">€${(i.price * i.qty).toFixed(2)}</span>
             </div>`).join('')}
         </div>
         ${o.note ? `<div class="mt-2 text-xs text-amber-700 bg-amber-50 rounded-lg px-2.5 py-1.5">📝 ${esc(o.note)}</div>` : ''}
-        <div class="mt-2 flex justify-end font-semibold text-slate-800 text-sm">Total: €${total.toFixed(2)}</div>
+        <div class="mt-2 flex justify-end font-semibold text-slate-800 text-sm">${t('total_colon')}${total.toFixed(2)}</div>
       </div>
     </div>`;
   }).join('');
@@ -796,7 +1105,7 @@ function renderOwnerOrders() {
 function openProductModal(id = null) {
   editingId = id;
   const p = id ? products.find(x => x.id === id) : null;
-  $('modal-title').textContent  = id ? 'Edit Product' : 'Add Product';
+  $('modal-title').textContent  = id ? t('edit_product_title') : t('add_product_title');
   $('pf-name').value            = p?.name ?? '';
   $('pf-category').value        = p?.category ?? (currentShop.categories[0] ?? '');
   $('pf-price').value           = p?.price ?? '';
@@ -826,7 +1135,7 @@ async function submitProductForm(e) {
       const updated = await api('PUT', `/api/shops/${currentShop.id}/products/${editingId}`, payload);
       const idx = products.findIndex(p => p.id === editingId);
       if (idx !== -1) products[idx] = updated;
-      toast('Product updated ✓');
+      toast(t('product_updated'));
     } else {
       const created = await api('POST', `/api/shops/${currentShop.id}/products`, payload);
       products.push(created);
@@ -834,7 +1143,7 @@ async function submitProductForm(e) {
         currentShop.categories.push(payload.category);
         $('sf-categories').value = currentShop.categories.join(', ');
       }
-      toast('Product added ✓');
+      toast(t('product_added'));
     }
     closeProductModal();
     renderProducts();
@@ -847,7 +1156,7 @@ async function deleteProduct(id, name) {
     await api('DELETE', `/api/shops/${currentShop.id}/products/${id}`);
     products = products.filter(p => p.id !== id);
     renderProducts();
-    toast('Product deleted');
+    toast(t('product_deleted'));
   } catch (e) { toast(e.message, 'err'); }
 }
 
@@ -871,15 +1180,7 @@ let custOpenOrders = []; // active orders shown in shops view
 let waiterCart      = {};  // productId → { product, qty }
 let waiterOrderProds = []; // products for waiter's shop
 
-const STATUS_LABEL = {
-  open:      '🟡 Open',
-  pending:   '⏳ Pending',
-  preparing: '🍳 Preparing',
-  ready:     '✅ Ready',
-  delivered: '🚚 Delivered',
-  paid:      '💳 Paid',
-  cancelled: '✕ Cancelled'
-};
+function STATUS_LABEL(s) { return t('status_' + s) || s; }
 const STATUS_COLOR = {
   open:      'bg-blue-100 text-blue-700',
   pending:   'bg-yellow-100 text-yellow-800',
@@ -947,7 +1248,7 @@ function renderOpenOrders(orders) {
   sec.classList.remove('hidden');
   const shopMap = Object.fromEntries(custShops.map(s => [s.id, s]));
   sec.innerHTML = `
-    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Your Active Orders</h2>
+    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">${t('your_active_orders')}</h2>
     ${orders.map((o, idx) => {
       const shop = shopMap[o.shopId];
       const total = o.items.reduce((s, i) => s + i.price * i.qty, 0);
@@ -956,8 +1257,8 @@ function renderOpenOrders(orders) {
           class="bg-white rounded-2xl border border-indigo-200 p-4 shadow-sm hover:shadow-md cursor-pointer mb-3 flex items-center gap-3">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <span class="font-semibold text-slate-900 text-sm">${esc(shop?.name || 'Shop')}</span>
-              <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLOR[orderDerivedStatus(o)]}">${STATUS_LABEL[orderDerivedStatus(o)]}</span>
+              <span class="font-semibold text-slate-900 text-sm">${esc(shop?.name || t('shop_fallback'))}</span>
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${STATUS_COLOR[orderDerivedStatus(o)]}">${STATUS_LABEL(orderDerivedStatus(o))}</span>
             </div>
             <p class="text-xs text-slate-500 truncate">${o.items.map(i => `${i.qty}× ${esc(i.name)}`).join(', ')}</p>
             <p class="text-xs text-slate-400 mt-0.5">€${total.toFixed(2)} · #${o.id.slice(-6)}</p>
@@ -981,7 +1282,7 @@ function viewActiveOrder(idx) {
 
 function renderShopsList(shops) {
   if (!shops.length) {
-    $('shops-list').innerHTML = '<p class="text-slate-400 text-center py-10">No shops found.</p>';
+    $('shops-list').innerHTML = `<p class="text-slate-400 text-center py-10">${t('no_shops')}</p>`;
     return;
   }
   const today = ['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
@@ -998,7 +1299,7 @@ function renderShopsList(shops) {
             <div class="flex flex-wrap items-center gap-3 mt-3">
               ${s.address ? `<span class="text-xs text-slate-400">📍 ${esc(s.address)}</span>` : ''}
               <span class="text-xs font-semibold ${open ? 'text-emerald-600' : 'text-slate-400'}">
-                ${open ? '● Open · ' + esc(hours) : '○ Closed today'}
+                ${open ? t('open_status') + esc(hours) : t('closed_today')}
               </span>
             </div>
           </div>
@@ -1113,8 +1414,8 @@ function renderCart() {
   if (!items.length) {
     $('cart-items').innerHTML = `
       <div class="text-center text-slate-400 py-10">
-        Your cart is empty.
-        <button onclick="custGo('menu')" class="text-indigo-600 hover:underline ml-1">Browse menu</button>
+        ${t('cart_empty')}
+        <button onclick="custGo('menu')" class="text-indigo-600 hover:underline ml-1">${t('browse_menu')}</button>
       </div>`;
     $('place-order-btn').disabled = true;
     $('place-order-btn').className = 'w-full bg-slate-200 text-slate-400 py-3 rounded-xl font-bold text-base cursor-not-allowed';
@@ -1130,7 +1431,7 @@ function renderCart() {
         <div class="flex items-center gap-3 px-4 py-3 ${i < items.length - 1 ? 'border-b border-slate-100' : ''}">
           <div class="flex-1 min-w-0">
             <div class="font-medium text-slate-900">${esc(item.product.name)}</div>
-            <div class="text-xs text-slate-400">€${item.product.price.toFixed(2)} each</div>
+            <div class="text-xs text-slate-400">€${item.product.price.toFixed(2)} ${t('each_label')}</div>
           </div>
           <div class="flex items-center gap-2">
             <button onclick="cartDec('${item.product.id}')"
@@ -1162,12 +1463,12 @@ function cartDec(id) {
 
 async function placeOrder() {
   const name = $('checkout-name').value.trim();
-  if (!name) { $('checkout-name').focus(); return toast('Please enter your name', 'err'); }
+  if (!name) { $('checkout-name').focus(); return toast(t('please_enter_name'), 'err'); }
   if (!cartCount()) return;
 
   const btn = $('place-order-btn');
   btn.disabled = true;
-  btn.textContent = 'Placing order…';
+  btn.textContent = t('placing_order');
 
   try {
     custOrder = await api('POST', `/api/shops/${custShopId}/orders`, {
@@ -1185,7 +1486,7 @@ async function placeOrder() {
   } catch (e) {
     toast(e.message, 'err');
     btn.disabled = false;
-    btn.textContent = 'Place Order';
+    btn.textContent = t('place_order');
   }
 }
 
@@ -1198,11 +1499,11 @@ function renderOrderCard(order) {
   $('order-status-card').innerHTML = `
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="bg-indigo-600 text-white p-5">
-        <div class="text-sm text-indigo-200 mb-2">Order placed ✓</div>
+        <div class="text-sm text-indigo-200 mb-2">${t('order_placed_ok')}</div>
         <div class="flex items-center justify-between gap-3">
           <span class="font-mono text-xs text-indigo-300">#${order.id}</span>
           <span class="px-3 py-1 rounded-full text-xs font-semibold ${STATUS_COLOR[derived] || 'bg-slate-100'}">
-            ${STATUS_LABEL[derived] || derived}
+            ${STATUS_LABEL(derived) || derived}
           </span>
         </div>
       </div>
@@ -1217,13 +1518,13 @@ function renderOrderCard(order) {
           </div>`).join('')}
       </div>
       <div class="flex justify-between px-4 py-3 bg-slate-50 font-bold text-sm border-t border-slate-200">
-        <span>Total</span><span>€${total.toFixed(2)}</span>
+        <span>${t('total_label')}</span><span>€${total.toFixed(2)}</span>
       </div>
       ${order.note ? `<div class="px-4 py-3 text-sm text-slate-500 border-t border-slate-100">📝 ${esc(order.note)}</div>` : ''}
       <div class="px-4 py-3 border-t border-slate-100">
         ${terminal
-          ? `<button onclick="newOrder()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-indigo-700 transition">New Order</button>`
-          : `<p class="text-xs text-slate-400 text-center">Checking for updates every 3 s…</p>`}
+          ? `<button onclick="newOrder()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl font-semibold text-sm hover:bg-indigo-700 transition">${t('new_order_link')}</button>`
+          : `<p class="text-xs text-slate-400 text-center">${t('checking_updates')}</p>`}
       </div>
     </div>`;
 }
@@ -1282,10 +1583,10 @@ function connectSSE(shopId, onEvent) {
 
 function timeAgo(iso) {
   const s = Math.floor((Date.now() - new Date(iso)) / 1000);
-  if (s < 5)    return 'just now';
-  if (s < 60)   return s + 's ago';
-  if (s < 3600) return Math.floor(s / 60) + 'm ago';
-  return Math.floor(s / 3600) + 'h ago';
+  if (s < 5)    return t('just_now');
+  if (s < 60)   return s + t('s_ago');
+  if (s < 3600) return Math.floor(s / 60) + t('m_ago');
+  return Math.floor(s / 3600) + t('h_ago');
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -1328,11 +1629,11 @@ function renderKitchen() {
 
   $('k-pending').innerHTML = newOrders.length
     ? newOrders.map(o => kOrderCard(o)).join('')
-    : '<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">No new orders</p>';
+    : `<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">${t('no_new_orders')}</p>`;
 
   $('k-preparing').innerHTML = inProgress.length
     ? inProgress.map(o => kOrderCard(o)).join('')
-    : '<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">Nothing in progress</p>';
+    : `<p class="text-sm text-slate-400 text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">${t('nothing_in_progress')}</p>`;
 }
 
 function kOrderCard(o) {
@@ -1368,9 +1669,9 @@ function kItemRow(orderId, item) {
       <span class="flex-1 text-slate-800">${esc(item.name)}</span>
       ${isPending
         ? `<button onclick="kitchenItemAction('${orderId}','${item.id}','preparing')"
-             class="text-xs px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium transition whitespace-nowrap">Start →</button>`
+             class="text-xs px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium transition whitespace-nowrap">${t('start_btn')}</button>`
         : `<button onclick="kitchenItemAction('${orderId}','${item.id}','ready')"
-             class="text-xs px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium transition whitespace-nowrap">✓ Ready</button>`}
+             class="text-xs px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium transition whitespace-nowrap">${t('ready_btn')}</button>`}
     </div>`;
 }
 
@@ -1419,7 +1720,7 @@ function toggleWaiterVibrate() {
   const btn = $('waiter-vibrate-btn');
   btn.classList.toggle('opacity-30', !waiterVibrateEnabled);
   btn.classList.toggle('opacity-100', waiterVibrateEnabled);
-  btn.title = waiterVibrateEnabled ? 'Vibration on — tap to disable' : 'Tap to enable vibration alerts';
+  btn.title = waiterVibrateEnabled ? t('vibrate_disable') : t('vibrate_enable');
   if (waiterVibrateEnabled) navigator.vibrate([50, 30, 50]);
 }
 
@@ -1437,12 +1738,12 @@ function renderWaiter() {
     ? active.map(o => wReadyCard(o)).join('')
     : `<div class="text-center text-slate-400 py-12 border-2 border-dashed border-slate-200 rounded-2xl">
          <div class="text-4xl mb-2">⏳</div>
-         <p class="text-sm">Waiting for items to be ready…</p>
+         <p class="text-sm">${t('waiting_ready')}</p>
        </div>`;
 
   $('w-delivered').innerHTML = paid.length
     ? paid.map(o => wPaidRow(o)).join('')
-    : '<p class="text-sm text-slate-400 text-center py-2">No closed bills yet</p>';
+    : `<p class="text-sm text-slate-400 text-center py-2">${t('no_closed_bills')}</p>`;
 }
 
 function wReadyCard(o) {
@@ -1471,7 +1772,7 @@ function wReadyCard(o) {
           <div class="flex items-center gap-2 text-sm opacity-50">
             <span class="w-5 text-right shrink-0 font-bold text-slate-400">${i.qty}×</span>
             <span class="flex-1 text-slate-400 italic">${esc(i.name)}</span>
-            <span class="text-xs text-slate-400">preparing…</span>
+            <span class="text-xs text-slate-400">${t('preparing_label')}</span>
           </div>`).join('')}
       </div>
       <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
@@ -1488,7 +1789,7 @@ function wItemRow(orderId, item) {
       <span class="flex-1 text-slate-800">${esc(item.name)}</span>
       <button onclick="waiterDeliverItem('${orderId}','${item.id}')"
         class="text-xs px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium transition whitespace-nowrap">
-        🚚 Deliver
+        ${t('deliver_btn')}
       </button>
     </div>`;
 }
@@ -1522,7 +1823,7 @@ async function waiterPay(orderId) {
     const updated = await api('PATCH', `/api/shops/${currentUser.shopId}/orders/${orderId}/pay`);
     waiterOrders[orderId] = updated;
     renderWaiter();
-    toast('Bill closed ✓');
+    toast(t('bill_closed'));
   } catch (e) { toast(e.message, 'err'); }
 }
 
@@ -1532,7 +1833,7 @@ async function openWaiterOrder() {
   $('waiter-order-note').value = '';
   $('waiter-order-modal').classList.add('show');
   if (!waiterOrderProds.length) {
-    $('waiter-order-products').innerHTML = '<p class="text-slate-400 text-center py-8">Loading…</p>';
+    $('waiter-order-products').innerHTML = `<p class="text-slate-400 text-center py-8">${t('loading')}</p>`;
     waiterOrderProds = await api('GET', `/api/shops/${currentUser.shopId}/products`).catch(() => []);
   }
   renderWaiterOrderProducts();
@@ -1545,7 +1846,7 @@ function closeWaiterOrder() {
 function renderWaiterOrderProducts() {
   const avail = waiterOrderProds.filter(p => p.available);
   if (!avail.length) {
-    $('waiter-order-products').innerHTML = '<p class="text-slate-400 text-center py-8">No products available.</p>';
+    $('waiter-order-products').innerHTML = `<p class="text-slate-400 text-center py-8">${t('no_products_avail')}</p>`;
     return;
   }
   const groups = {};
@@ -1599,7 +1900,7 @@ function renderWaiterOrderCartSummary() {
   const total = items.reduce((s, i) => s + i.product.price * i.qty, 0);
   summary.innerHTML = `
     <div class="flex justify-between font-semibold">
-      <span>${items.reduce((s, i) => s + i.qty, 0)} item(s)</span>
+      <span>${items.reduce((s, i) => s + i.qty, 0)} ${t('items_count')}</span>
       <span>€${total.toFixed(2)}</span>
     </div>
     <div class="text-xs text-slate-400 mt-1">${items.map(i => `${i.qty}× ${esc(i.product.name)}`).join(', ')}</div>`;
@@ -1607,13 +1908,13 @@ function renderWaiterOrderCartSummary() {
 
 async function placeWaiterOrder() {
   const name = $('waiter-order-name').value.trim();
-  if (!name) { $('waiter-order-name').focus(); return toast('Please enter a name', 'err'); }
+  if (!name) { $('waiter-order-name').focus(); return toast(t('please_select_table'), 'err'); }
   const items = Object.values(waiterCart);
-  if (!items.length) return toast('Add at least one item', 'err');
+  if (!items.length) return toast(t('add_item'), 'err');
 
   const btn = $('waiter-order-btn');
   btn.disabled = true;
-  btn.textContent = 'Placing…';
+  btn.textContent = t('placing');
   try {
     const order = await api('POST', `/api/shops/${currentUser.shopId}/orders`, {
       customerName: name,
@@ -1623,12 +1924,12 @@ async function placeWaiterOrder() {
     waiterOrders[order.id] = order;
     renderWaiter();
     closeWaiterOrder();
-    toast(`Order placed for ${name} ✓`);
+    toast(`${t('order_placed_for')} ${name} ✓`);
   } catch (e) {
     toast(e.message, 'err');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Place Order';
+    btn.textContent = t('place_order');
   }
 }
 
@@ -1669,12 +1970,12 @@ function renderCashier() {
     ? open.map(o => cashierOrderCard(o)).join('')
     : `<div class="text-center text-slate-400 py-12 border-2 border-dashed border-slate-200 rounded-2xl">
          <div class="text-4xl mb-2">💳</div>
-         <p class="text-sm">No open bills</p>
+         <p class="text-sm">${t('no_open_bills')}</p>
        </div>`;
 
   $('cashier-paid-list').innerHTML = paid.length
     ? paid.map(o => cashierPaidRow(o)).join('')
-    : '<p class="text-sm text-slate-400 text-center py-2">No payments yet</p>';
+    : `<p class="text-sm text-slate-400 text-center py-2">${t('no_payments_yet')}</p>`;
 }
 
 function cashierOrderCard(o) {
@@ -1693,7 +1994,7 @@ function cashierOrderCard(o) {
         ${o.items.map(i => `
           <div class="flex items-center justify-between text-sm">
             <div class="flex items-center gap-2">
-              <span class="px-1.5 py-0.5 rounded text-xs font-semibold ${STATUS_COLOR[i.status] || ''}">${STATUS_LABEL[i.status] || ''}</span>
+              <span class="px-1.5 py-0.5 rounded text-xs font-semibold ${STATUS_COLOR[i.status] || ''}">${STATUS_LABEL(i.status) || ''}</span>
               <span class="text-slate-700">${i.qty}× ${esc(i.name)}</span>
             </div>
             <span class="text-slate-500">€${(i.price * i.qty).toFixed(2)}</span>
@@ -1704,7 +2005,7 @@ function cashierOrderCard(o) {
         <span class="font-bold text-lg text-slate-800">€${total.toFixed(2)}</span>
         <button onclick="cashierCloseBill('${o.id}')"
           class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition">
-          💳 Close Bill
+          ${t('close_bill')}
         </button>
       </div>
     </div>`;
@@ -1731,7 +2032,7 @@ async function cashierCloseBill(orderId) {
     const updated = await api('PATCH', `/api/shops/${currentUser.shopId}/orders/${orderId}/pay`);
     cashierOrders[orderId] = updated;
     renderCashier();
-    toast('Bill closed ✓');
+    toast(t('bill_closed'));
   } catch (e) { toast(e.message, 'err'); }
 }
 
@@ -1739,6 +2040,8 @@ async function cashierCloseBill(orderId) {
 // Boot
 // ═════════════════════════════════════════════════════════════════════════════
 (async () => {
+  document.documentElement.lang = lang;
+  applyLang();
   const saved = localStorage.getItem('sf_user');
   if (saved) {
     try {
@@ -1753,7 +2056,7 @@ async function cashierCloseBill(orderId) {
     } catch { localStorage.removeItem('sf_user'); }
   }
   await renderLoginCards();
-  showView('login');
+  showView('landing');
 })();
 </script>
 </body>
