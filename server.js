@@ -195,6 +195,9 @@ app.patch('/api/shops/:shopId/orders/:id/pay', requireAuth, requireShopRole('own
   const orders = db.get('orders');
   const i = orders.findIndex(o => o.id === req.params.id && o.shopId === req.params.shopId);
   if (i === -1) return res.status(404).json({ error: 'Not found' });
+  if (['paid', 'cancelled'].includes(orders[i].status)) {
+    return res.status(409).json({ error: `Order already ${orders[i].status}` });
+  }
   orders[i].status = 'paid';
   orders[i].updatedAt = new Date().toISOString();
   db.set('orders', orders);
@@ -209,11 +212,22 @@ app.patch('/api/shops/:shopId/orders/:id/status', requireAuth, requireShopRole('
   const orders = db.get('orders');
   const i = orders.findIndex(o => o.id === req.params.id && o.shopId === req.params.shopId);
   if (i === -1) return res.status(404).json({ error: 'Not found' });
+  if (['paid', 'cancelled'].includes(orders[i].status)) {
+    return res.status(409).json({ error: `Order already ${orders[i].status}` });
+  }
   orders[i].status = status;
   orders[i].updatedAt = new Date().toISOString();
   db.set('orders', orders);
   broadcast(req.params.shopId, 'order:updated', orders[i]);
   res.json(orders[i]);
+});
+
+// Reset all orders for a shop (testing utility)
+app.delete('/api/shops/:shopId/orders', requireAuth, requireShopRole('owner'), (req, res) => {
+  const orders = db.get('orders').filter(o => o.shopId !== req.params.shopId);
+  db.set('orders', orders);
+  broadcast(req.params.shopId, 'orders:reset', {});
+  res.status(204).end();
 });
 
 // ── SSE ───────────────────────────────────────────────────────────────────────

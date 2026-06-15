@@ -223,6 +223,16 @@
         Save Changes
       </button>
     </div>
+
+    <!-- Danger zone -->
+    <div class="bg-white rounded-2xl border border-red-200 p-5 shadow-sm mt-6">
+      <h3 class="font-semibold text-red-700 mb-1" data-i18n="danger_zone">Danger Zone</h3>
+      <p class="text-sm text-slate-500 mb-4" data-i18n="reset_orders_desc">Delete all orders for this shop. Useful for clearing test data. This cannot be undone.</p>
+      <button onclick="resetShopOrders()"
+        class="border border-red-300 text-red-600 hover:bg-red-50 px-4 py-2 rounded-lg text-sm font-semibold transition" data-i18n="reset_orders_btn">
+        🗑️ Reset Orders
+      </button>
+    </div>
   </div>
 
   <!-- Products pane -->
@@ -588,6 +598,10 @@ const TRANSLATIONS = {
     categories_label:'Categories (comma-separated)', categories_ph:'Coffee, Food, Drinks…',
     opening_times:'Opening Times', language_title:'Language',
     save_changes:'Save Changes', settings_saved:'Settings saved ✓', closed:'Closed',
+    danger_zone:'Danger Zone', reset_orders_btn:'🗑️ Reset Orders',
+    reset_orders_desc:'Delete all orders for this shop. Useful for clearing test data. This cannot be undone.',
+    reset_orders_confirm:'Delete ALL orders for this shop? This cannot be undone.',
+    orders_reset:'Orders reset ✓',
     day_mon:'Mon', day_tue:'Tue', day_wed:'Wed', day_thu:'Thu',
     day_fri:'Fri', day_sat:'Sat', day_sun:'Sun',
     stat_total:'Total', stat_available:'Available', stat_categories:'Categories',
@@ -655,6 +669,10 @@ const TRANSLATIONS = {
     categories_label:'Catégories (séparées par virgule)', categories_ph:'Café, Nourriture, Boissons…',
     opening_times:"Horaires d'ouverture", language_title:'Langue',
     save_changes:'Enregistrer', settings_saved:'Paramètres enregistrés ✓', closed:'Fermé',
+    danger_zone:'Zone de danger', reset_orders_btn:'🗑️ Réinitialiser les commandes',
+    reset_orders_desc:'Supprime toutes les commandes de cette boutique. Utile pour effacer les données de test. Action irréversible.',
+    reset_orders_confirm:'Supprimer TOUTES les commandes de cette boutique ? Action irréversible.',
+    orders_reset:'Commandes réinitialisées ✓',
     day_mon:'Lun', day_tue:'Mar', day_wed:'Mer', day_thu:'Jeu',
     day_fri:'Ven', day_sat:'Sam', day_sun:'Dim',
     stat_total:'Total', stat_available:'Disponibles', stat_categories:'Catégories',
@@ -883,6 +901,8 @@ function ownerTab(tab) {
       } else if (evt === 'order:updated') {
         const idx = ownerOrders.findIndex(o => o.id === data.id);
         if (idx !== -1) ownerOrders[idx] = data; else ownerOrders.unshift(data);
+      } else if (evt === 'orders:reset') {
+        ownerOrders = [];
       }
       renderOwnerOrders();
     });
@@ -943,6 +963,16 @@ async function saveSettings() {
     $('owner-shop-name').textContent = currentShop.name;
     refreshCategoryList();
     toast(t('settings_saved'));
+  } catch (e) { toast(e.message, 'err'); }
+}
+
+async function resetShopOrders() {
+  if (!confirm(t('reset_orders_confirm'))) return;
+  try {
+    await api('DELETE', `/api/shops/${currentShop.id}/orders`);
+    ownerOrders = [];
+    renderOwnerOrders();
+    toast(t('orders_reset'));
   } catch (e) { toast(e.message, 'err'); }
 }
 
@@ -1575,6 +1605,7 @@ function connectSSE(shopId, onEvent) {
     src.addEventListener('connected',     () => {});
     src.addEventListener('order:new',     e => onEvent('order:new',     JSON.parse(e.data)));
     src.addEventListener('order:updated', e => onEvent('order:updated', JSON.parse(e.data)));
+    src.addEventListener('orders:reset',  ()  => onEvent('orders:reset', null));
     src.onerror = () => { src.close(); setTimeout(open, 3000); };
   }
   open();
@@ -1604,8 +1635,8 @@ async function initKitchen() {
   kitchenOrders = Object.fromEntries(orders.map(o => [o.id, o]));
   renderKitchen();
 
-  kitchenSSE = connectSSE(currentUser.shopId, (_evt, order) => {
-    kitchenOrders[order.id] = order;
+  kitchenSSE = connectSSE(currentUser.shopId, (evt, order) => {
+    if (evt === 'orders:reset') { kitchenOrders = {}; } else { kitchenOrders[order.id] = order; }
     renderKitchen();
   });
   $('kitchen-dot').className = 'w-2 h-2 rounded-full bg-emerald-400 inline-block';
@@ -1700,6 +1731,7 @@ async function initWaiter() {
   renderWaiter();
 
   waiterSSE = connectSSE(currentUser.shopId, (evt, order) => {
+    if (evt === 'orders:reset') { waiterOrders = {}; renderWaiter(); return; }
     const prev = waiterOrders[order.id];
     waiterOrders[order.id] = order;
     if (waiterVibrateEnabled && navigator.vibrate) {
@@ -1950,8 +1982,8 @@ async function initCashier() {
   cashierOrders = Object.fromEntries(orders.map(o => [o.id, o]));
   renderCashier();
 
-  cashierSSE = connectSSE(currentUser.shopId, (_evt, order) => {
-    cashierOrders[order.id] = order;
+  cashierSSE = connectSSE(currentUser.shopId, (evt, order) => {
+    if (evt === 'orders:reset') { cashierOrders = {}; } else { cashierOrders[order.id] = order; }
     renderCashier();
   });
   $('cashier-dot').className = 'w-2 h-2 rounded-full bg-emerald-400 inline-block';
