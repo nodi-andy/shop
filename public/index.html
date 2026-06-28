@@ -860,10 +860,11 @@ async function loginAs(userId) {
   if (currentUser.role === 'cashier')  await initCashier();
 }
 
-function logout() {
+async function logout() {
   currentUser = null;
   localStorage.removeItem('sf_user');
-  location.reload();
+  await renderLoginCards();
+  showView('login');
 }
 
 function goToApp() {

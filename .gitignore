@@ -1,6 +1,9 @@
 # Claude Code internal memory
 .claude/
 
+# Runtime database — orders are live data, never commit
+db/orders.json
+
 # Logs
 logs
 *.log
