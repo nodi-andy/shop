@@ -632,6 +632,11 @@ const TRANSLATIONS = {
     note_optional:'Note (optional)', place_order:'Place Order', placing:'Placing…',
     please_select_table:'Please select a table', add_item:'Add at least one item',
     no_products_avail:'No products available.', loading:'Loading…', add_to_order:'Add to order',
+    opt_group_bread:'Bread', opt_group_ingredients:'Ingredients', opt_group_sauce:'Sauce',
+    opt_choice_wrap:'Wrap', opt_choice_kebapbread:'Kebap Bread', opt_choice_bun:'Bun',
+    opt_choice_tomato:'Tomato', opt_choice_onion:'Onion', opt_choice_lettuce:'Lettuce', opt_choice_cheese:'Cheese',
+    opt_choice_ketchup:'Ketchup', opt_choice_mayo:'Mayonnaise',
+    opt_none_prefix:'No',
     order_placed_for:'Order placed for', items_count:'item(s)',
     open_bills:'Open Bills', recent_payments:'Recent Payments',
     no_open_bills:'No open bills', no_payments_yet:'No payments yet',
@@ -703,6 +708,11 @@ const TRANSLATIONS = {
     note_optional:'Note (optionnelle)', place_order:'Passer la commande', placing:'En cours…',
     please_select_table:'Veuillez sélectionner une table', add_item:'Ajoutez au moins un article',
     no_products_avail:'Aucun produit disponible.', loading:'Chargement…', add_to_order:'Ajouter à la commande',
+    opt_group_bread:'Pain', opt_group_ingredients:'Ingrédients', opt_group_sauce:'Sauce',
+    opt_choice_wrap:'Galette', opt_choice_kebapbread:'Pain à kebab', opt_choice_bun:'Pain burger',
+    opt_choice_tomato:'Tomate', opt_choice_onion:'Oignon', opt_choice_lettuce:'Salade', opt_choice_cheese:'Fromage',
+    opt_choice_ketchup:'Ketchup', opt_choice_mayo:'Mayonnaise',
+    opt_none_prefix:'Sans',
     order_placed_for:'Commande passée pour', items_count:'article(s)',
     open_bills:'Additions ouvertes', recent_payments:'Paiements récents',
     no_open_bills:'Aucune addition ouverte', no_payments_yet:'Aucun paiement',
@@ -1884,14 +1894,18 @@ function waiterOrderDefaultSelections(p) {
   return sel;
 }
 
+function waiterOrderGroupLabel(g) { return t(`opt_group_${g.id}`); }
+function waiterOrderChoiceLabel(c) { return t(`opt_choice_${c.id}`); }
+
 function waiterOrderDescribeOptions(p, options) {
   return (p.options || []).map(g => {
     const v = options[g.id];
     if (g.type === 'multi') {
-      const labels = (v || []).map(id => g.choices.find(c => c.id === id)?.label).filter(Boolean);
-      return labels.length ? labels.join(', ') : `No ${g.label.toLowerCase()}`;
+      const labels = (v || []).map(id => g.choices.find(c => c.id === id)).filter(Boolean).map(waiterOrderChoiceLabel);
+      return labels.length ? labels.join(', ') : `${t('opt_none_prefix')} ${waiterOrderGroupLabel(g).toLowerCase()}`;
     }
-    return g.choices.find(c => c.id === v)?.label || '';
+    const c = g.choices.find(c => c.id === v);
+    return c ? waiterOrderChoiceLabel(c) : '';
   }).filter(Boolean).join(' · ');
 }
 
@@ -1909,7 +1923,7 @@ function renderWaiterOrderOptionGroup(p, g) {
   const sel = waiterOrderSelections[p.id][g.id];
   return `
     <div class="mb-2 last:mb-0">
-      <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1">${esc(g.label)}</div>
+      <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1">${esc(waiterOrderGroupLabel(g))}</div>
       <div class="flex flex-wrap gap-1.5">
         ${g.choices.map(c => {
           const checked = g.type === 'multi' ? sel.includes(c.id) : sel === c.id;
@@ -1917,7 +1931,7 @@ function renderWaiterOrderOptionGroup(p, g) {
             <label class="text-xs px-2.5 py-1 rounded-full border cursor-pointer select-none transition ${checked ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300'}">
               <input type="${g.type === 'multi' ? 'checkbox' : 'radio'}" ${g.type === 'single' ? `name="opt-${p.id}-${g.id}"` : ''}
                 class="hidden" ${checked ? 'checked' : ''}
-                onchange="waiterOrderSetOption('${p.id}','${g.id}','${c.id}', this.checked)">${esc(c.label)}
+                onchange="waiterOrderSetOption('${p.id}','${g.id}','${c.id}', this.checked)">${esc(waiterOrderChoiceLabel(c))}
             </label>`;
         }).join('')}
       </div>

@@ -92,37 +92,31 @@
     "options": [
       {
         "id": "bread",
-        "label": "Bread",
         "type": "single",
         "choices": [
-          { "id": "wrap", "label": "Wrap" },
-          { "id": "kebapbread", "label": "Kebap Bread" }
+          { "id": "wrap" },
+          { "id": "kebapbread" }
         ],
         "default": "kebapbread"
       },
       {
         "id": "ingredients",
-        "label": "Ingredients",
         "type": "multi",
         "choices": [
-          { "id": "tomato", "label": "Tomato" },
-          { "id": "cucumber", "label": "Cucumber" },
-          { "id": "onion", "label": "Onion" },
-          { "id": "lettuce", "label": "Lettuce" }
+          { "id": "tomato" },
+          { "id": "onion" },
+          { "id": "lettuce" }
         ],
-        "default": ["tomato", "cucumber", "onion", "lettuce"]
+        "default": ["tomato", "onion", "lettuce"]
       },
       {
         "id": "sauce",
-        "label": "Sauce",
-        "type": "single",
+        "type": "multi",
         "choices": [
-          { "id": "none", "label": "None" },
-          { "id": "ketchup", "label": "Ketchup" },
-          { "id": "mayo", "label": "Mayonnaise" },
-          { "id": "garlic", "label": "Garlic Sauce" }
+          { "id": "ketchup" },
+          { "id": "mayo" }
         ],
-        "default": "garlic"
+        "default": ["mayo"]
       }
     ]
   },
@@ -138,36 +132,31 @@
     "options": [
       {
         "id": "bread",
-        "label": "Bread",
         "type": "single",
         "choices": [
-          { "id": "wrap", "label": "Wrap" },
-          { "id": "bun", "label": "Bun" }
+          { "id": "wrap" },
+          { "id": "bun" }
         ],
         "default": "bun"
       },
       {
         "id": "ingredients",
-        "label": "Ingredients",
         "type": "multi",
         "choices": [
-          { "id": "tomato", "label": "Tomato" },
-          { "id": "cucumber", "label": "Cucumber" },
-          { "id": "lettuce", "label": "Lettuce" },
-          { "id": "cheese", "label": "Cheese" }
+          { "id": "tomato" },
+          { "id": "lettuce" },
+          { "id": "cheese" }
         ],
         "default": ["lettuce", "tomato"]
       },
       {
         "id": "sauce",
-        "label": "Sauce",
-        "type": "single",
+        "type": "multi",
         "choices": [
-          { "id": "none", "label": "None" },
-          { "id": "ketchup", "label": "Ketchup" },
-          { "id": "mayo", "label": "Mayonnaise" }
+          { "id": "ketchup" },
+          { "id": "mayo" }
         ],
-        "default": "mayo"
+        "default": ["mayo"]
       }
     ]
   },
