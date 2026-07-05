@@ -81,6 +81,97 @@
     "available": false
   },
   {
+    "id": "p12",
+    "shopId": "shop1",
+    "name": "Kebap Sandwich",
+    "category": "Food",
+    "price": 7.5,
+    "description": "Grilled meat, fresh veggies, your choice of bread and sauce",
+    "available": true,
+    "image": "images/kebap-sandwich.jpg",
+    "options": [
+      {
+        "id": "bread",
+        "label": "Bread",
+        "type": "single",
+        "choices": [
+          { "id": "wrap", "label": "Wrap" },
+          { "id": "kebapbread", "label": "Kebap Bread" }
+        ],
+        "default": "kebapbread"
+      },
+      {
+        "id": "ingredients",
+        "label": "Ingredients",
+        "type": "multi",
+        "choices": [
+          { "id": "tomato", "label": "Tomato" },
+          { "id": "cucumber", "label": "Cucumber" },
+          { "id": "onion", "label": "Onion" },
+          { "id": "lettuce", "label": "Lettuce" }
+        ],
+        "default": ["tomato", "cucumber", "onion", "lettuce"]
+      },
+      {
+        "id": "sauce",
+        "label": "Sauce",
+        "type": "single",
+        "choices": [
+          { "id": "none", "label": "None" },
+          { "id": "ketchup", "label": "Ketchup" },
+          { "id": "mayo", "label": "Mayonnaise" },
+          { "id": "garlic", "label": "Garlic Sauce" }
+        ],
+        "default": "garlic"
+      }
+    ]
+  },
+  {
+    "id": "p13",
+    "shopId": "shop1",
+    "name": "Chicken Sandwich",
+    "category": "Food",
+    "price": 7,
+    "description": "Grilled chicken, fresh veggies, your choice of bread and sauce",
+    "available": true,
+    "image": "images/chicken-sandwich.jpg",
+    "options": [
+      {
+        "id": "bread",
+        "label": "Bread",
+        "type": "single",
+        "choices": [
+          { "id": "wrap", "label": "Wrap" },
+          { "id": "bun", "label": "Bun" }
+        ],
+        "default": "bun"
+      },
+      {
+        "id": "ingredients",
+        "label": "Ingredients",
+        "type": "multi",
+        "choices": [
+          { "id": "tomato", "label": "Tomato" },
+          { "id": "cucumber", "label": "Cucumber" },
+          { "id": "lettuce", "label": "Lettuce" },
+          { "id": "cheese", "label": "Cheese" }
+        ],
+        "default": ["lettuce", "tomato"]
+      },
+      {
+        "id": "sauce",
+        "label": "Sauce",
+        "type": "single",
+        "choices": [
+          { "id": "none", "label": "None" },
+          { "id": "ketchup", "label": "Ketchup" },
+          { "id": "mayo", "label": "Mayonnaise" }
+        ],
+        "default": "mayo"
+      }
+    ]
+  },
+  {
     "id": "p10",
     "shopId": "shop1",
     "name": "Chocolate Muffin",

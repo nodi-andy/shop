@@ -631,7 +631,7 @@ const TRANSLATIONS = {
     new_order_title:'New Order', table_number:'Table number *', table_prefix:'Table',
     note_optional:'Note (optional)', place_order:'Place Order', placing:'Placing…',
     please_select_table:'Please select a table', add_item:'Add at least one item',
-    no_products_avail:'No products available.', loading:'Loading…',
+    no_products_avail:'No products available.', loading:'Loading…', add_to_order:'Add to order',
     order_placed_for:'Order placed for', items_count:'item(s)',
     open_bills:'Open Bills', recent_payments:'Recent Payments',
     no_open_bills:'No open bills', no_payments_yet:'No payments yet',
@@ -702,7 +702,7 @@ const TRANSLATIONS = {
     new_order_title:'Nouvelle commande', table_number:'Numéro de table *', table_prefix:'Table',
     note_optional:'Note (optionnelle)', place_order:'Passer la commande', placing:'En cours…',
     please_select_table:'Veuillez sélectionner une table', add_item:'Ajoutez au moins un article',
-    no_products_avail:'Aucun produit disponible.', loading:'Chargement…',
+    no_products_avail:'Aucun produit disponible.', loading:'Chargement…', add_to_order:'Ajouter à la commande',
     order_placed_for:'Commande passée pour', items_count:'article(s)',
     open_bills:'Additions ouvertes', recent_payments:'Paiements récents',
     no_open_bills:'Aucune addition ouverte', no_payments_yet:'Aucun paiement',
@@ -1208,8 +1208,9 @@ let menuFilter  = 'All';
 let custShops   = [];   // cached shop list
 let custOpenOrders = []; // active orders shown in shops view
 
-let waiterCart      = {};  // productId → { product, qty }
+let waiterCart      = {};  // lineKey → { product, qty, options }
 let waiterOrderProds = []; // products for waiter's shop
+let waiterOrderSelections = {}; // productId → { groupId: choiceId | choiceId[] } — current picks for configurable items
 
 function STATUS_LABEL(s) { return t('status_' + s) || s; }
 const STATUS_COLOR = {
@@ -1862,6 +1863,7 @@ async function waiterPay(orderId) {
 
 async function openWaiterOrder() {
   waiterCart = {};
+  waiterOrderSelections = {};
   $('waiter-order-name').value = '';
   $('waiter-order-note').value = '';
   $('waiter-order-modal').classList.add('show');
@@ -1876,6 +1878,99 @@ function closeWaiterOrder() {
   $('waiter-order-modal').classList.remove('show');
 }
 
+function waiterOrderDefaultSelections(p) {
+  const sel = {};
+  (p.options || []).forEach(g => { sel[g.id] = g.type === 'multi' ? [...(g.default || [])] : g.default; });
+  return sel;
+}
+
+function waiterOrderDescribeOptions(p, options) {
+  return (p.options || []).map(g => {
+    const v = options[g.id];
+    if (g.type === 'multi') {
+      const labels = (v || []).map(id => g.choices.find(c => c.id === id)?.label).filter(Boolean);
+      return labels.length ? labels.join(', ') : `No ${g.label.toLowerCase()}`;
+    }
+    return g.choices.find(c => c.id === v)?.label || '';
+  }).filter(Boolean).join(' · ');
+}
+
+function waiterOrderLineKey(productId, options) {
+  if (!options) return productId;
+  const norm = {};
+  Object.keys(options).sort().forEach(k => {
+    const v = options[k];
+    norm[k] = Array.isArray(v) ? [...v].sort() : v;
+  });
+  return productId + '::' + JSON.stringify(norm);
+}
+
+function renderWaiterOrderOptionGroup(p, g) {
+  const sel = waiterOrderSelections[p.id][g.id];
+  return `
+    <div class="mb-2 last:mb-0">
+      <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1">${esc(g.label)}</div>
+      <div class="flex flex-wrap gap-1.5">
+        ${g.choices.map(c => {
+          const checked = g.type === 'multi' ? sel.includes(c.id) : sel === c.id;
+          return `
+            <label class="text-xs px-2.5 py-1 rounded-full border cursor-pointer select-none transition ${checked ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-300'}">
+              <input type="${g.type === 'multi' ? 'checkbox' : 'radio'}" ${g.type === 'single' ? `name="opt-${p.id}-${g.id}"` : ''}
+                class="hidden" ${checked ? 'checked' : ''}
+                onchange="waiterOrderSetOption('${p.id}','${g.id}','${c.id}', this.checked)">${esc(c.label)}
+            </label>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function renderWaiterOrderConfiguredProduct(p, isLast) {
+  if (!waiterOrderSelections[p.id]) waiterOrderSelections[p.id] = waiterOrderDefaultSelections(p);
+  const lines = Object.entries(waiterCart).filter(([, line]) => line.product.id === p.id);
+  return `
+    <div class="px-4 py-3 ${isLast ? '' : 'border-b border-slate-100'}">
+      <div class="flex items-center gap-3 mb-2">
+        ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" class="w-14 h-14 rounded-xl object-cover shrink-0 border border-slate-100">` : ''}
+        <div class="flex-1 min-w-0 flex items-center justify-between">
+          <div class="font-medium text-slate-900 text-sm">${esc(p.name)}</div>
+          <div class="text-xs text-slate-400">€${p.price.toFixed(2)}</div>
+        </div>
+      </div>
+      ${p.options.map(g => renderWaiterOrderOptionGroup(p, g)).join('')}
+      <button onclick="waiterOrderAddConfigured('${p.id}')"
+        class="mt-2 w-full text-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-1.5 rounded-lg transition">+ ${t('add_to_order')}</button>
+      ${lines.length ? `
+        <div class="mt-2 space-y-1">
+          ${lines.map(([key, line]) => `
+            <div class="flex items-center gap-2 text-xs bg-slate-50 rounded-lg px-2.5 py-1.5">
+              <span class="flex-1 text-slate-600">${esc(waiterOrderDescribeOptions(p, line.options))}</span>
+              <span class="font-semibold text-indigo-700 shrink-0">${line.qty}×</span>
+              <button onclick="waiterOrderRemoveLine('${key}')"
+                class="w-5 h-5 rounded-full bg-slate-200 hover:bg-red-100 hover:text-red-600 flex items-center justify-center font-bold leading-none shrink-0">−</button>
+            </div>`).join('')}
+        </div>` : ''}
+    </div>`;
+}
+
+function renderWaiterOrderSimpleProduct(p, isLast) {
+  const qty = waiterCart[p.id]?.qty || 0;
+  return `
+    <div class="flex items-center gap-3 px-4 py-3 ${isLast ? '' : 'border-b border-slate-100'}">
+      <div class="flex-1 min-w-0">
+        <div class="font-medium text-slate-900 text-sm">${esc(p.name)}</div>
+        <div class="text-xs text-slate-400">€${p.price.toFixed(2)}</div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        ${qty > 0 ? `
+          <button onclick="waiterOrderDec('${p.id}')"
+            class="w-7 h-7 rounded-full bg-slate-100 hover:bg-red-100 hover:text-red-600 flex items-center justify-center font-bold text-xl leading-none transition">−</button>
+          <span class="w-5 text-center font-bold text-indigo-700 text-sm">${qty}</span>` : ''}
+        <button onclick="waiterOrderInc('${p.id}')"
+          class="w-7 h-7 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-600 flex items-center justify-center font-bold text-xl leading-none transition">+</button>
+      </div>
+    </div>`;
+}
+
 function renderWaiterOrderProducts() {
   const avail = waiterOrderProds.filter(p => p.available);
   if (!avail.length) {
@@ -1884,31 +1979,50 @@ function renderWaiterOrderProducts() {
   }
   const groups = {};
   avail.forEach(p => { (groups[p.category] ??= []).push(p); });
-  $('waiter-order-products').innerHTML = Object.entries(groups).map(([cat, items]) => `
+  const cats = Object.keys(groups).sort((a, b) => (a === 'Food' ? -1 : b === 'Food' ? 1 : 0));
+  $('waiter-order-products').innerHTML = cats.map(cat => {
+    const items = groups[cat];
+    return `
     <div class="mb-4">
       <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">${esc(cat)}</h4>
       <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        ${items.map((p, i) => {
-          const qty = waiterCart[p.id]?.qty || 0;
-          return `
-            <div class="flex items-center gap-3 px-4 py-3 ${i < items.length - 1 ? 'border-b border-slate-100' : ''}">
-              <div class="flex-1 min-w-0">
-                <div class="font-medium text-slate-900 text-sm">${esc(p.name)}</div>
-                <div class="text-xs text-slate-400">€${p.price.toFixed(2)}</div>
-              </div>
-              <div class="flex items-center gap-2 shrink-0">
-                ${qty > 0 ? `
-                  <button onclick="waiterOrderDec('${p.id}')"
-                    class="w-7 h-7 rounded-full bg-slate-100 hover:bg-red-100 hover:text-red-600 flex items-center justify-center font-bold text-xl leading-none transition">−</button>
-                  <span class="w-5 text-center font-bold text-indigo-700 text-sm">${qty}</span>` : ''}
-                <button onclick="waiterOrderInc('${p.id}')"
-                  class="w-7 h-7 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-600 flex items-center justify-center font-bold text-xl leading-none transition">+</button>
-              </div>
-            </div>`;
-        }).join('')}
+        ${items.map((p, i) => p.options
+          ? renderWaiterOrderConfiguredProduct(p, i === items.length - 1)
+          : renderWaiterOrderSimpleProduct(p, i === items.length - 1)
+        ).join('')}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   renderWaiterOrderCartSummary();
+}
+
+function waiterOrderSetOption(productId, groupId, choiceId, checked) {
+  const p = waiterOrderProds.find(x => x.id === productId);
+  const group = p.options.find(g => g.id === groupId);
+  const sel = waiterOrderSelections[productId];
+  if (group.type === 'multi') {
+    const set = new Set(sel[groupId]);
+    checked ? set.add(choiceId) : set.delete(choiceId);
+    sel[groupId] = [...set];
+  } else {
+    sel[groupId] = choiceId;
+  }
+  renderWaiterOrderProducts();
+}
+
+function waiterOrderAddConfigured(productId) {
+  const p = waiterOrderProds.find(x => x.id === productId);
+  const options = { ...waiterOrderSelections[productId] };
+  const key = waiterOrderLineKey(productId, options);
+  waiterCart[key] = { product: p, qty: (waiterCart[key]?.qty || 0) + 1, options };
+  renderWaiterOrderProducts();
+}
+
+function waiterOrderRemoveLine(key) {
+  if (!waiterCart[key]) return;
+  waiterCart[key].qty--;
+  if (waiterCart[key].qty <= 0) delete waiterCart[key];
+  renderWaiterOrderProducts();
 }
 
 function waiterOrderInc(id) {
@@ -1936,7 +2050,7 @@ function renderWaiterOrderCartSummary() {
       <span>${items.reduce((s, i) => s + i.qty, 0)} ${t('items_count')}</span>
       <span>€${total.toFixed(2)}</span>
     </div>
-    <div class="text-xs text-slate-400 mt-1">${items.map(i => `${i.qty}× ${esc(i.product.name)}`).join(', ')}</div>`;
+    <div class="text-xs text-slate-400 mt-1">${items.map(i => `${i.qty}× ${esc(i.product.name)}${i.options ? ` (${esc(waiterOrderDescribeOptions(i.product, i.options))})` : ''}`).join(', ')}</div>`;
 }
 
 async function placeWaiterOrder() {
@@ -1951,7 +2065,12 @@ async function placeWaiterOrder() {
   try {
     const order = await api('POST', `/api/shops/${currentUser.shopId}/orders`, {
       customerName: name,
-      items: items.map(({ product, qty }) => ({ productId: product.id, name: product.name, price: product.price, qty })),
+      items: items.map(({ product, qty, options }) => ({
+        productId: product.id,
+        name: options ? `${product.name} (${waiterOrderDescribeOptions(product, options)})` : product.name,
+        price: product.price,
+        qty
+      })),
       note: $('waiter-order-note').value.trim()
     });
     waiterOrders[order.id] = order;
