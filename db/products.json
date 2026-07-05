@@ -92,31 +92,91 @@
     "options": [
       {
         "id": "bread",
+        "label": {
+          "en": "Bread",
+          "fr": "Pain"
+        },
         "type": "single",
         "choices": [
-          { "id": "wrap" },
-          { "id": "kebapbread" }
+          {
+            "id": "wrap",
+            "label": {
+              "en": "Wrap",
+              "fr": "Galette"
+            }
+          },
+          {
+            "id": "kebapbread",
+            "label": {
+              "en": "Kebap Bread",
+              "fr": "Pain à kebab"
+            }
+          }
         ],
         "default": "kebapbread"
       },
       {
         "id": "ingredients",
+        "label": {
+          "en": "Ingredients",
+          "fr": "Ingrédients"
+        },
         "type": "multi",
         "choices": [
-          { "id": "tomato" },
-          { "id": "onion" },
-          { "id": "lettuce" }
+          {
+            "id": "tomato",
+            "label": {
+              "en": "Tomato",
+              "fr": "Tomate"
+            }
+          },
+          {
+            "id": "onion",
+            "label": {
+              "en": "Onion",
+              "fr": "Oignon"
+            }
+          },
+          {
+            "id": "lettuce",
+            "label": {
+              "en": "Lettuce",
+              "fr": "Salade"
+            }
+          }
         ],
-        "default": ["tomato", "onion", "lettuce"]
+        "default": [
+          "tomato",
+          "onion",
+          "lettuce"
+        ]
       },
       {
         "id": "sauce",
+        "label": {
+          "en": "Sauce",
+          "fr": "Sauce"
+        },
         "type": "multi",
         "choices": [
-          { "id": "ketchup" },
-          { "id": "mayo" }
+          {
+            "id": "ketchup",
+            "label": {
+              "en": "Ketchup",
+              "fr": "Ketchup"
+            }
+          },
+          {
+            "id": "mayo",
+            "label": {
+              "en": "Mayonnaise",
+              "fr": "Mayonnaise"
+            }
+          }
         ],
-        "default": ["mayo"]
+        "default": [
+          "mayo"
+        ]
       }
     ]
   },
@@ -132,31 +192,90 @@
     "options": [
       {
         "id": "bread",
+        "label": {
+          "en": "Bread",
+          "fr": "Pain"
+        },
         "type": "single",
         "choices": [
-          { "id": "wrap" },
-          { "id": "bun" }
+          {
+            "id": "wrap",
+            "label": {
+              "en": "Wrap",
+              "fr": "Galette"
+            }
+          },
+          {
+            "id": "bun",
+            "label": {
+              "en": "Bun",
+              "fr": "Pain burger"
+            }
+          }
         ],
         "default": "bun"
       },
       {
         "id": "ingredients",
+        "label": {
+          "en": "Ingredients",
+          "fr": "Ingrédients"
+        },
         "type": "multi",
         "choices": [
-          { "id": "tomato" },
-          { "id": "lettuce" },
-          { "id": "cheese" }
+          {
+            "id": "tomato",
+            "label": {
+              "en": "Tomato",
+              "fr": "Tomate"
+            }
+          },
+          {
+            "id": "lettuce",
+            "label": {
+              "en": "Lettuce",
+              "fr": "Salade"
+            }
+          },
+          {
+            "id": "cheese",
+            "label": {
+              "en": "Cheese",
+              "fr": "Fromage"
+            }
+          }
         ],
-        "default": ["lettuce", "tomato"]
+        "default": [
+          "lettuce",
+          "tomato"
+        ]
       },
       {
         "id": "sauce",
+        "label": {
+          "en": "Sauce",
+          "fr": "Sauce"
+        },
         "type": "multi",
         "choices": [
-          { "id": "ketchup" },
-          { "id": "mayo" }
+          {
+            "id": "ketchup",
+            "label": {
+              "en": "Ketchup",
+              "fr": "Ketchup"
+            }
+          },
+          {
+            "id": "mayo",
+            "label": {
+              "en": "Mayonnaise",
+              "fr": "Mayonnaise"
+            }
+          }
         ],
-        "default": ["mayo"]
+        "default": [
+          "mayo"
+        ]
       }
     ]
   },

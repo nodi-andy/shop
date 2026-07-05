@@ -532,12 +532,12 @@
 
 <!-- ═══════════════════════ PRODUCT MODAL ════════════════════════════════════ -->
 <div id="product-modal" class="modal-bg fixed inset-0 bg-black/40 z-50 items-center justify-center p-4">
-  <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl">
-    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+  <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[85vh]">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
       <h3 id="modal-title" class="font-semibold text-slate-900 text-lg">Add Product</h3>
       <button onclick="closeProductModal()" class="text-slate-400 hover:text-slate-700 text-xl leading-none">&times;</button>
     </div>
-    <form id="product-form" onsubmit="submitProductForm(event)" class="px-6 py-4 space-y-4">
+    <form id="product-form" onsubmit="submitProductForm(event)" class="px-6 py-4 space-y-4 overflow-y-auto">
       <div>
         <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="name_required">Name *</label>
         <input id="pf-name" type="text" required
@@ -564,6 +564,13 @@
       <div class="flex items-center gap-3">
         <input id="pf-available" type="checkbox" checked class="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-400">
         <label for="pf-available" class="text-sm text-slate-700" data-i18n="available_for_ordering">Available for ordering</label>
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide" data-i18n="product_options">Options</label>
+          <button type="button" onclick="addOptionGroup()" class="text-xs text-indigo-600 hover:text-indigo-700 font-medium" data-i18n="add_option_group">+ Add option group</button>
+        </div>
+        <div id="pf-options-list" class="space-y-3"></div>
       </div>
       <div class="flex gap-3 pt-2">
         <button type="button" onclick="closeProductModal()"
@@ -632,11 +639,11 @@ const TRANSLATIONS = {
     note_optional:'Note (optional)', place_order:'Place Order', placing:'Placing…',
     please_select_table:'Please select a table', add_item:'Add at least one item',
     no_products_avail:'No products available.', loading:'Loading…', add_to_order:'Add to order',
-    opt_group_bread:'Bread', opt_group_ingredients:'Ingredients', opt_group_sauce:'Sauce',
-    opt_choice_wrap:'Wrap', opt_choice_kebapbread:'Kebap Bread', opt_choice_bun:'Bun',
-    opt_choice_tomato:'Tomato', opt_choice_onion:'Onion', opt_choice_lettuce:'Lettuce', opt_choice_cheese:'Cheese',
-    opt_choice_ketchup:'Ketchup', opt_choice_mayo:'Mayonnaise',
     opt_none_prefix:'No',
+    product_options:'Options', add_option_group:'+ Add option group', add_choice:'+ Add choice',
+    group_type_single:'Pick one', group_type_multi:'Pick multiple',
+    label_en:'Label (EN)', label_fr:'Label (FR)', default_label:'Default',
+    no_options_yet:'No options yet — add a group to let staff customize this item.',
     order_placed_for:'Order placed for', items_count:'item(s)',
     open_bills:'Open Bills', recent_payments:'Recent Payments',
     no_open_bills:'No open bills', no_payments_yet:'No payments yet',
@@ -708,11 +715,11 @@ const TRANSLATIONS = {
     note_optional:'Note (optionnelle)', place_order:'Passer la commande', placing:'En cours…',
     please_select_table:'Veuillez sélectionner une table', add_item:'Ajoutez au moins un article',
     no_products_avail:'Aucun produit disponible.', loading:'Chargement…', add_to_order:'Ajouter à la commande',
-    opt_group_bread:'Pain', opt_group_ingredients:'Ingrédients', opt_group_sauce:'Sauce',
-    opt_choice_wrap:'Galette', opt_choice_kebapbread:'Pain à kebab', opt_choice_bun:'Pain burger',
-    opt_choice_tomato:'Tomate', opt_choice_onion:'Oignon', opt_choice_lettuce:'Salade', opt_choice_cheese:'Fromage',
-    opt_choice_ketchup:'Ketchup', opt_choice_mayo:'Mayonnaise',
     opt_none_prefix:'Sans',
+    product_options:'Options', add_option_group:"+ Ajouter un groupe d'options", add_choice:'+ Ajouter un choix',
+    group_type_single:'Choix unique', group_type_multi:'Choix multiples',
+    label_en:'Libellé (EN)', label_fr:'Libellé (FR)', default_label:'Par défaut',
+    no_options_yet:'Aucune option — ajoutez un groupe pour personnaliser cet article.',
     order_placed_for:'Commande passée pour', items_count:'article(s)',
     open_bills:'Additions ouvertes', recent_payments:'Paiements récents',
     no_open_bills:'Aucune addition ouverte', no_payments_yet:'Aucun paiement',
@@ -1143,6 +1150,101 @@ function renderOwnerOrders() {
 }
 
 // ── Product modal ─────────────────────────────────────────────────────────────
+let editingOptions = [];
+
+function genOptId(prefix) { return `${prefix}-${Math.random().toString(36).slice(2, 8)}`; }
+
+function addOptionGroup() {
+  editingOptions.push({ id: genOptId('grp'), label: { en: '', fr: '' }, type: 'single', choices: [], default: null });
+  renderOptionsEditor();
+}
+
+function removeOptionGroup(gi) {
+  editingOptions.splice(gi, 1);
+  renderOptionsEditor();
+}
+
+function setOptionGroupType(gi, type) {
+  const g = editingOptions[gi];
+  g.type = type;
+  g.default = type === 'multi' ? [] : null;
+  renderOptionsEditor();
+}
+
+function updateOptionGroupLabel(gi, langKey, value) {
+  editingOptions[gi].label[langKey] = value;
+}
+
+function addOptionChoice(gi) {
+  editingOptions[gi].choices.push({ id: genOptId('opt'), label: { en: '', fr: '' } });
+  renderOptionsEditor();
+}
+
+function removeOptionChoice(gi, ci) {
+  const g = editingOptions[gi];
+  const removedId = g.choices[ci].id;
+  g.choices.splice(ci, 1);
+  if (g.type === 'single' && g.default === removedId) g.default = null;
+  if (g.type === 'multi') g.default = (g.default || []).filter(id => id !== removedId);
+  renderOptionsEditor();
+}
+
+function updateOptionChoiceLabel(gi, ci, langKey, value) {
+  editingOptions[gi].choices[ci].label[langKey] = value;
+}
+
+function setOptionDefaultSingle(gi, choiceId) {
+  editingOptions[gi].default = choiceId;
+}
+
+function toggleOptionDefaultMulti(gi, choiceId, checked) {
+  const g = editingOptions[gi];
+  const set = new Set(g.default || []);
+  checked ? set.add(choiceId) : set.delete(choiceId);
+  g.default = [...set];
+}
+
+function renderOptionsEditor() {
+  const el = $('pf-options-list');
+  if (!editingOptions.length) {
+    el.innerHTML = `<p class="text-xs text-slate-400 italic">${t('no_options_yet')}</p>`;
+    return;
+  }
+  el.innerHTML = editingOptions.map((g, gi) => `
+    <div class="border border-slate-200 rounded-xl p-3 space-y-2">
+      <div class="flex items-center gap-2">
+        <input type="text" placeholder="${esc(t('label_en'))}" value="${esc(g.label.en)}"
+          oninput="updateOptionGroupLabel(${gi},'en',this.value)"
+          class="flex-1 min-w-0 border border-slate-200 rounded-lg px-2 py-1 text-xs">
+        <input type="text" placeholder="${esc(t('label_fr'))}" value="${esc(g.label.fr)}"
+          oninput="updateOptionGroupLabel(${gi},'fr',this.value)"
+          class="flex-1 min-w-0 border border-slate-200 rounded-lg px-2 py-1 text-xs">
+        <select onchange="setOptionGroupType(${gi}, this.value)" class="border border-slate-200 rounded-lg px-1 py-1 text-xs shrink-0">
+          <option value="single" ${g.type === 'single' ? 'selected' : ''}>${esc(t('group_type_single'))}</option>
+          <option value="multi" ${g.type === 'multi' ? 'selected' : ''}>${esc(t('group_type_multi'))}</option>
+        </select>
+        <button type="button" onclick="removeOptionGroup(${gi})" class="text-slate-400 hover:text-red-500 text-lg leading-none px-1 shrink-0">&times;</button>
+      </div>
+      <div class="space-y-1.5 pl-1">
+        ${g.choices.map((c, ci) => `
+          <div class="flex items-center gap-2">
+            <input type="${g.type === 'multi' ? 'checkbox' : 'radio'}" ${g.type === 'single' ? `name="pf-default-${gi}"` : ''}
+              ${(g.type === 'multi' ? (g.default || []).includes(c.id) : g.default === c.id) ? 'checked' : ''}
+              onchange="${g.type === 'multi' ? `toggleOptionDefaultMulti(${gi},'${c.id}', this.checked)` : `setOptionDefaultSingle(${gi},'${c.id}')`}"
+              title="${esc(t('default_label'))}" class="shrink-0">
+            <input type="text" placeholder="${esc(t('label_en'))}" value="${esc(c.label.en)}"
+              oninput="updateOptionChoiceLabel(${gi},${ci},'en',this.value)"
+              class="flex-1 min-w-0 border border-slate-200 rounded-lg px-2 py-1 text-xs">
+            <input type="text" placeholder="${esc(t('label_fr'))}" value="${esc(c.label.fr)}"
+              oninput="updateOptionChoiceLabel(${gi},${ci},'fr',this.value)"
+              class="flex-1 min-w-0 border border-slate-200 rounded-lg px-2 py-1 text-xs">
+            <button type="button" onclick="removeOptionChoice(${gi},${ci})" class="text-slate-400 hover:text-red-500 text-sm leading-none px-1 shrink-0">&times;</button>
+          </div>`).join('')}
+        <button type="button" onclick="addOptionChoice(${gi})" class="text-xs text-indigo-600 hover:text-indigo-700 font-medium">+ ${esc(t('add_choice'))}</button>
+      </div>
+    </div>`).join('');
+}
+
 function openProductModal(id = null) {
   editingId = id;
   const p = id ? products.find(x => x.id === id) : null;
@@ -1152,6 +1254,8 @@ function openProductModal(id = null) {
   $('pf-price').value           = p?.price ?? '';
   $('pf-desc').value            = p?.description ?? '';
   $('pf-available').checked     = p?.available !== false;
+  editingOptions = JSON.parse(JSON.stringify(p?.options ?? []));
+  renderOptionsEditor();
   refreshCategoryList();
   $('product-modal').classList.add('show');
   $('pf-name').focus();
@@ -1160,16 +1264,38 @@ function openProductModal(id = null) {
 function closeProductModal() {
   $('product-modal').classList.remove('show');
   editingId = null;
+  editingOptions = [];
 }
 
 async function submitProductForm(e) {
   e.preventDefault();
+  const options = editingOptions
+    .filter(g => g.label.en.trim() && g.choices.length)
+    .map(g => {
+      const choices = g.choices.filter(c => c.label.en.trim()).map(c => ({
+        id: c.id,
+        label: { en: c.label.en.trim(), fr: c.label.fr.trim() || c.label.en.trim() }
+      }));
+      const validIds = new Set(choices.map(c => c.id));
+      const def = g.type === 'multi'
+        ? (g.default || []).filter(id => validIds.has(id))
+        : (validIds.has(g.default) ? g.default : (choices[0]?.id ?? null));
+      return {
+        id: g.id,
+        label: { en: g.label.en.trim(), fr: g.label.fr.trim() || g.label.en.trim() },
+        type: g.type,
+        choices,
+        default: def
+      };
+    })
+    .filter(g => g.choices.length);
   const payload = {
     name:        $('pf-name').value.trim(),
     category:    $('pf-category').value.trim(),
     price:       parseFloat($('pf-price').value),
     description: $('pf-desc').value.trim(),
-    available:   $('pf-available').checked
+    available:   $('pf-available').checked,
+    options
   };
   try {
     if (editingId) {
@@ -1894,8 +2020,8 @@ function waiterOrderDefaultSelections(p) {
   return sel;
 }
 
-function waiterOrderGroupLabel(g) { return t(`opt_group_${g.id}`); }
-function waiterOrderChoiceLabel(c) { return t(`opt_choice_${c.id}`); }
+function waiterOrderGroupLabel(g) { return g.label?.[lang] || g.label?.en || g.id; }
+function waiterOrderChoiceLabel(c) { return c.label?.[lang] || c.label?.en || c.id; }
 
 function waiterOrderDescribeOptions(p, options) {
   return (p.options || []).map(g => {
@@ -2000,7 +2126,7 @@ function renderWaiterOrderProducts() {
     <div class="mb-4">
       <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">${esc(cat)}</h4>
       <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        ${items.map((p, i) => p.options
+        ${items.map((p, i) => p.options?.length
           ? renderWaiterOrderConfiguredProduct(p, i === items.length - 1)
           : renderWaiterOrderSimpleProduct(p, i === items.length - 1)
         ).join('')}

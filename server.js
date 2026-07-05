@@ -78,6 +78,7 @@ app.post('/api/shops/:shopId/products', requireAuth, requireShopRole('owner'), (
     available: req.body.available !== false
   };
   if (!product.name) return res.status(400).json({ error: 'Name is required' });
+  if (Array.isArray(req.body.options) && req.body.options.length) product.options = req.body.options;
   const products = db.get('products');
   products.push(product);
   db.set('products', products);
@@ -92,6 +93,10 @@ app.put('/api/shops/:shopId/products/:id', requireAuth, requireShopRole('owner')
     if (req.body[k] !== undefined) products[i][k] = req.body[k];
   });
   if (req.body.price !== undefined) products[i].price = Math.max(0, Number(req.body.price) || 0);
+  if (req.body.options !== undefined) {
+    if (Array.isArray(req.body.options) && req.body.options.length) products[i].options = req.body.options;
+    else delete products[i].options;
+  }
   db.set('products', products);
   res.json(products[i]);
 });
