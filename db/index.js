@@ -3,10 +3,18 @@ const path = require('path');
 const DIR = __dirname;
 
 function get(name) {
+  const file = path.join(DIR, `${name}.json`);
   try {
-    return JSON.parse(fs.readFileSync(path.join(DIR, `${name}.json`), 'utf8'));
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
   } catch {
-    return [];
+    const seedFile = path.join(DIR, 'seed', `${name}.json`);
+    try {
+      const seeded = JSON.parse(fs.readFileSync(seedFile, 'utf8'));
+      fs.writeFileSync(file, JSON.stringify(seeded, null, 2));
+      return seeded;
+    } catch {
+      return [];
+    }
   }
 }
 

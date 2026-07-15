@@ -1,0 +1,309 @@
+[
+  {
+    "id": "p1",
+    "shopId": "shop1",
+    "name": "Espresso",
+    "category": "Coffee",
+    "price": 2.5,
+    "description": "Strong Italian espresso shot",
+    "available": true
+  },
+  {
+    "id": "p2",
+    "shopId": "shop1",
+    "name": "Cappuccino",
+    "category": "Coffee",
+    "price": 3.5,
+    "description": "Espresso with velvety steamed milk",
+    "available": true
+  },
+  {
+    "id": "p3",
+    "shopId": "shop1",
+    "name": "Latte",
+    "category": "Coffee",
+    "price": 4,
+    "description": "Smooth coffee with lots of milk",
+    "available": true
+  },
+  {
+    "id": "p4",
+    "shopId": "shop1",
+    "name": "Cold Brew",
+    "category": "Coffee",
+    "price": 4.5,
+    "description": "12-hour cold-steeped coffee",
+    "available": true
+  },
+  {
+    "id": "p5",
+    "shopId": "shop1",
+    "name": "Orange Juice",
+    "category": "Cold Drinks",
+    "price": 3,
+    "description": "Freshly squeezed",
+    "available": true
+  },
+  {
+    "id": "p6",
+    "shopId": "shop1",
+    "name": "Sparkling Water",
+    "category": "Cold Drinks",
+    "price": 1.5,
+    "description": "330 ml bottle",
+    "available": true
+  },
+  {
+    "id": "p7",
+    "shopId": "shop1",
+    "name": "Club Sandwich",
+    "category": "Food",
+    "price": 8.5,
+    "description": "Chicken, bacon, lettuce, tomato",
+    "available": true
+  },
+  {
+    "id": "p8",
+    "shopId": "shop1",
+    "name": "Croissant",
+    "category": "Food",
+    "price": 3.5,
+    "description": "Butter croissant, plain or with jam",
+    "available": true
+  },
+  {
+    "id": "p9",
+    "shopId": "shop1",
+    "name": "Avocado Toast",
+    "category": "Food",
+    "price": 7,
+    "description": "Sourdough, avocado, poached egg",
+    "available": false
+  },
+  {
+    "id": "p12",
+    "shopId": "shop1",
+    "name": "Kebap Sandwich",
+    "category": "Food",
+    "price": 7.5,
+    "description": "Grilled meat, fresh veggies, your choice of bread and sauce",
+    "available": true,
+    "image": "images/kebap-sandwich.jpg",
+    "options": [
+      {
+        "id": "bread",
+        "label": {
+          "en": "Bread",
+          "fr": "Pain"
+        },
+        "type": "single",
+        "choices": [
+          {
+            "id": "wrap",
+            "label": {
+              "en": "Wrap",
+              "fr": "Galette"
+            }
+          },
+          {
+            "id": "kebapbread",
+            "label": {
+              "en": "Kebap Bread",
+              "fr": "Pain à kebab"
+            }
+          }
+        ],
+        "default": "kebapbread"
+      },
+      {
+        "id": "ingredients",
+        "label": {
+          "en": "Ingredients",
+          "fr": "Ingrédients"
+        },
+        "type": "multi",
+        "choices": [
+          {
+            "id": "tomato",
+            "label": {
+              "en": "Tomato",
+              "fr": "Tomate"
+            }
+          },
+          {
+            "id": "onion",
+            "label": {
+              "en": "Onion",
+              "fr": "Oignon"
+            }
+          },
+          {
+            "id": "lettuce",
+            "label": {
+              "en": "Lettuce",
+              "fr": "Salade"
+            }
+          }
+        ],
+        "default": [
+          "tomato",
+          "onion",
+          "lettuce"
+        ]
+      },
+      {
+        "id": "sauce",
+        "label": {
+          "en": "Sauce",
+          "fr": "Sauce"
+        },
+        "type": "multi",
+        "choices": [
+          {
+            "id": "ketchup",
+            "label": {
+              "en": "Ketchup",
+              "fr": "Ketchup"
+            }
+          },
+          {
+            "id": "mayo",
+            "label": {
+              "en": "Mayonnaise",
+              "fr": "Mayonnaise"
+            }
+          }
+        ],
+        "default": [
+          "mayo"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "p13",
+    "shopId": "shop1",
+    "name": "Chicken Sandwich",
+    "category": "Food",
+    "price": 7,
+    "description": "Grilled chicken, fresh veggies, your choice of bread and sauce",
+    "available": true,
+    "image": "images/chicken-sandwich.jpg",
+    "options": [
+      {
+        "id": "bread",
+        "label": {
+          "en": "Bread",
+          "fr": "Pain"
+        },
+        "type": "single",
+        "choices": [
+          {
+            "id": "wrap",
+            "label": {
+              "en": "Wrap",
+              "fr": "Galette"
+            }
+          },
+          {
+            "id": "bun",
+            "label": {
+              "en": "Bun",
+              "fr": "Pain burger"
+            }
+          }
+        ],
+        "default": "bun"
+      },
+      {
+        "id": "ingredients",
+        "label": {
+          "en": "Ingredients",
+          "fr": "Ingrédients"
+        },
+        "type": "multi",
+        "choices": [
+          {
+            "id": "tomato",
+            "label": {
+              "en": "Tomato",
+              "fr": "Tomate"
+            }
+          },
+          {
+            "id": "lettuce",
+            "label": {
+              "en": "Lettuce",
+              "fr": "Salade"
+            }
+          },
+          {
+            "id": "cheese",
+            "label": {
+              "en": "Cheese",
+              "fr": "Fromage"
+            }
+          }
+        ],
+        "default": [
+          "lettuce",
+          "tomato"
+        ]
+      },
+      {
+        "id": "sauce",
+        "label": {
+          "en": "Sauce",
+          "fr": "Sauce"
+        },
+        "type": "multi",
+        "choices": [
+          {
+            "id": "ketchup",
+            "label": {
+              "en": "Ketchup",
+              "fr": "Ketchup"
+            }
+          },
+          {
+            "id": "mayo",
+            "label": {
+              "en": "Mayonnaise",
+              "fr": "Mayonnaise"
+            }
+          }
+        ],
+        "default": [
+          "mayo"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "p10",
+    "shopId": "shop1",
+    "name": "Chocolate Muffin",
+    "category": "Snacks",
+    "price": 2.8,
+    "description": "Rich dark chocolate muffin",
+    "available": true
+  },
+  {
+    "id": "p11",
+    "shopId": "shop1",
+    "name": "Granola Bar",
+    "category": "Snacks",
+    "price": 2.2,
+    "description": "Oat & honey granola bar",
+    "available": true
+  },
+  {
+    "id": "pmpmwvw7dsth",
+    "shopId": "shop1",
+    "name": "SODA",
+    "category": "Cold Drinks",
+    "price": 2,
+    "description": "",
+    "available": true
+  }
+]
