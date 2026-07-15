@@ -1,8 +1,11 @@
 # Claude Code internal memory
 .claude/
 
-# Runtime database — orders are live data, never commit
+# Runtime database — live data, never commit (redeploys/rebuilds must not reset these)
 db/orders.json
+db/products.json
+db/shops.json
+db/users.json
 
 # Logs
 logs
