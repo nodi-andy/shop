@@ -1,9 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const DIR = __dirname;
+// In prod (Cloud Run) this points at a mounted GCS bucket so writes survive
+// container restarts; DIR's local disk is wiped on every fresh instance.
+const DATA_DIR = process.env.DATA_DIR || DIR;
 
 function get(name) {
-  const file = path.join(DIR, `${name}.json`);
+  const file = path.join(DATA_DIR, `${name}.json`);
   try {
     return JSON.parse(fs.readFileSync(file, 'utf8'));
   } catch {
@@ -19,7 +22,7 @@ function get(name) {
 }
 
 function set(name, data) {
-  fs.writeFileSync(path.join(DIR, `${name}.json`), JSON.stringify(data, null, 2));
+  fs.writeFileSync(path.join(DATA_DIR, `${name}.json`), JSON.stringify(data, null, 2));
 }
 
 function uid(prefix = '') {
